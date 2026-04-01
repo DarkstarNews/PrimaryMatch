@@ -316,7 +316,7 @@ html, body {
   opacity: 1; transform: scale(1);
 }
 .match-pct {
-  font-family: 'Source Serif 4', Georgia, serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 72px; font-weight: 700;
   color: var(--text);
   line-height: 1;
@@ -380,7 +380,7 @@ html, body {
 .match-item-name { font-weight: 600; font-size: 16px; }
 .match-item-detail { font-size: 13px; color: var(--muted); }
 .match-item-score {
-  font-family: 'Source Serif 4', Georgia, serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 24px; font-weight: 700;
 }
 
@@ -495,7 +495,7 @@ html, body {
 .rep-detail-large { font-size: 14px; color: var(--muted); margin-top: 4px; }
 .rep-compat {
   margin-top: 16px;
-  font-family: 'Source Serif 4', Georgia, serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 48px; font-weight: 700;
 }
 .rep-compat-label {
@@ -607,7 +607,7 @@ html, body {
   flex-shrink: 0; text-align: right; padding-left: 8px;
 }
 .rep-card-compat {
-  font-family: 'Source Serif 4', Georgia, serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 24px; font-weight: 700;
   line-height: 1;
 }
@@ -669,7 +669,7 @@ html, body {
   text-align: center;
 }
 .rep-stat-val {
-  font-family: 'Source Serif 4', Georgia, serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 18px; font-weight: 700;
 }
 .rep-stat-label {
@@ -967,7 +967,7 @@ html, body {
 }
 .fp-closest-sub { font-size: 13px; color: var(--muted); }
 .fp-closest-score {
-  font-family: 'Source Serif 4', Georgia, serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 28px; font-weight: 700;
 }
 
@@ -993,7 +993,7 @@ html, body {
   margin-bottom: 4px;
 }
 .fp-share-tagline {
-  font-family: 'Source Serif 4', Georgia, serif;
+  font-family: 'DM Sans', system-ui, sans-serif;
   font-size: 16px;
   color: var(--bg);
 }
@@ -1654,7 +1654,7 @@ function buildResults(matches) {
     ${indep !== null ? `
     <div style="background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:24px;box-shadow:var(--card-shadow);text-align:center">
       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px">Independence Score</div>
-      <div style="font-family:'Source Serif 4',Georgia,serif;font-size:40px;font-weight:700;color:${indep >= 40 ? 'var(--surprise)' : 'var(--muted)'}">${indep}%</div>
+      <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:40px;font-weight:700;color:${indep >= 40 ? 'var(--surprise)' : 'var(--muted)'}">${indep}%</div>
       <div style="font-size:13px;color:var(--muted);margin-top:6px;line-height:1.4">You broke from the ${partyLabel} party line on ${indep}% of today's issues</div>
     </div>` : ''}
     <div class="match-list">
@@ -1955,11 +1955,11 @@ function openRepExpanded(repId) {
     <div style="display:flex;gap:10px;margin-bottom:16px">
       <div style="flex:1;background:var(--card);border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);text-align:center">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px">Your Match</div>
-        <div style="font-family:'Source Serif 4',Georgia,serif;font-size:32px;font-weight:700;color:${compat >= 60 ? 'var(--agree)' : compat <= 40 ? 'var(--disagree)' : 'var(--muted)'}">${compat}%</div>
+        <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:32px;font-weight:700;color:${compat >= 60 ? 'var(--agree)' : compat <= 40 ? 'var(--disagree)' : 'var(--muted)'}">${compat}%</div>
       </div>
       <div style="flex:1;background:var(--card);border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);text-align:center">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px">Independence</div>
-        <div style="font-family:'Source Serif 4',Georgia,serif;font-size:32px;font-weight:700;color:${indepColor}">${rep.independenceScore}%</div>
+        <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:32px;font-weight:700;color:${indepColor}">${rep.independenceScore}%</div>
       </div>
     </div>
     <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:20px">Based on ${stats.total} issues across 15 days</div>
@@ -1992,7 +1992,7 @@ function openRepExpanded(repId) {
               <div style="font-size:14px;font-weight:500">${d.name}</div>
               <div style="font-size:11px;color:var(--muted)">${d.type === 'pac' ? 'PAC' : d.type === 'org' ? 'Organization' : 'Individual'}</div>
             </div>
-            <div style="font-family:'Source Serif 4',Georgia,serif;font-size:15px;font-weight:600">${d.amount}</div>
+            <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:15px;font-weight:600">${d.amount}</div>
           </div>
         `).join('')}
       </div>
@@ -2012,7 +2012,7 @@ function openRepExpanded(repId) {
       <div style="background:var(--card);border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
         <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px">Lobbying Exposure</div>
         <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
-          <div style="font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700">${rep.lobbyingExposure.total}</div>
+          <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:24px;font-weight:700">${rep.lobbyingExposure.total}</div>
           <div style="font-size:12px;color:var(--muted)">from lobbying-connected donors</div>
         </div>
         <div style="display:flex;align-items:center;gap:8px">
@@ -2198,7 +2198,7 @@ function buildFingerprintTab() {
     <!-- Level — full width below radar -->
     <div style="background:var(--card);border-radius:14px;padding:16px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.04);margin-bottom:20px;display:flex;align-items:center;gap:16px">
       <div style="text-align:center;flex-shrink:0;min-width:48px">
-        <div style="font-family:'Source Serif 4',Georgia,serif;font-size:36px;font-weight:700;color:${level.color};line-height:1">${level.num}</div>
+        <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:36px;font-weight:700;color:${level.color};line-height:1">${level.num}</div>
         <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Rank</div>
       </div>
       <div style="flex:1;min-width:0">
