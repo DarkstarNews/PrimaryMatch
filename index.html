@@ -1280,6 +1280,7 @@ const REPS = [
 
 // ─── MOCK HISTORICAL DATA (15 days of play) ───
 const CATEGORIES = ['Tech', 'Healthcare', 'Immigration', 'Economy', 'Rights', 'Environment'];
+const CAT_SHORT = { Tech: 'TECH', Healthcare: 'HEALTH', Immigration: 'IMMIG', Economy: 'ECON', Rights: 'RIGHTS', Environment: 'ENVIRO' };
 const CATEGORY_COLORS = {
   'Tech': '#7B61C7',
   'Healthcare': '#D4654A',
@@ -1823,7 +1824,7 @@ function buildRepCard(rep, idx) {
     const cs = stats.byCategory[cat];
     const pct = cs.total > 0 ? Math.round((cs.agree / cs.total) * 100) : 50;
     return `<div class="stance-bar-row">
-      <div class="stance-bar-cat">${cat}</div>
+      <div class="stance-bar-cat">${CAT_SHORT[cat] || cat}</div>
       <div class="stance-bar-track"><div class="stance-bar-fill" style="width:${pct}%;background:${CATEGORY_COLORS[cat]}"></div></div>
       <div class="stance-bar-icon">${pct >= 60 ? '●' : pct <= 40 ? '○' : '◐'}</div>
     </div>`;
@@ -1916,7 +1917,7 @@ function openRepExpanded(repId) {
     const pct = cs.total > 0 ? Math.round((cs.agree / cs.total) * 100) : 50;
     const count = cs.total;
     return `<div class="stance-bar-row">
-      <div class="stance-bar-cat">${cat}</div>
+      <div class="stance-bar-cat">${CAT_SHORT[cat] || cat}</div>
       <div class="stance-bar-track"><div class="stance-bar-fill" style="width:${pct}%;background:${CATEGORY_COLORS[cat]}"></div></div>
       <div class="stance-bar-icon" style="font-size:11px;color:var(--muted)">${pct}%</div>
     </div>`;
