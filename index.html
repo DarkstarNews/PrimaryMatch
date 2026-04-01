@@ -2457,7 +2457,7 @@ function positionAxisLabels(axes) {
     const offset = 46;
     const x = pct + Math.cos(angle) * offset;
     const y = pct + Math.sin(angle) * offset;
-    return `<div class="fp-axis-label" style="left:${x}%;top:${y}%;color:${CATEGORY_COLORS[a.cat]}">${a.cat}</div>`;
+    return `<div class="fp-axis-label" style="left:${x}%;top:${y}%;color:${CATEGORY_COLORS[a.cat]}">${CAT_SHORT[a.cat] || a.cat}</div>`;
   }).join('');
 }
 
