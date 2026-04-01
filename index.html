@@ -72,9 +72,11 @@ html, body {
 .screen.active { 
   opacity: 1; pointer-events: all; 
 }
-/* Full-screen overlays (game, rep-profile) sit above the nav */
+/* Full-screen overlays (game, rep-profile) sit above everything */
 .screen.overlay {
   bottom: 0;
+  z-index: 50;
+  background: var(--bg);
 }
 
 /* ─── BOTTOM NAV ─── */
@@ -716,8 +718,12 @@ html, body {
 }
 
 /* Expanded rep profile (from reps tab) */
+#rep-expanded {
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
 .rep-expanded {
-  padding: 24px;
+  padding: 16px;
+  padding-bottom: calc(32px + var(--safe-bottom));
   max-width: 440px;
   margin: 0 auto;
 }
@@ -1182,31 +1188,89 @@ const REPS = [
     votes: { 'tiktok-ban': true, 'insulin-cap': true, 'border-wall': false, 'student-debt': true, 'assault-weapons': true },
     yearsInOffice: 12, state: 'MA', chamber: 'Senate',
     committees: ['Banking', 'Finance', 'Armed Services'],
-    hotTake: { text: 'Voted to ban TikTok despite being its most viral senator', breakFrom: 'Usually opposes tech regulation that limits consumer access' }
+    hotTake: { text: 'Voted to ban TikTok despite being its most viral senator', breakFrom: 'Usually opposes tech regulation that limits consumer access' },
+    independenceScore: 14,
+    topDonors: [
+      { name: 'University of California', amount: '$432K', type: 'org' },
+      { name: 'Harvard University', amount: '$287K', type: 'org' },
+      { name: 'ActBlue', amount: '$1.2M', type: 'pac' },
+      { name: 'League of Conservation Voters', amount: '$198K', type: 'pac' }
+    ],
+    portfolio: [
+      { holding: 'TIAA-CREF Funds', value: '$1M–$5M' },
+      { holding: 'Vanguard Index Fund', value: '$250K–$500K' }
+    ],
+    lobbyingExposure: { total: '$2.1M', topIndustry: 'Financial Services', pct: 34 }
   },
   { id: 'sen-cruz', name: 'Ted Cruz', title: 'Senator · R-TX', party: 'R', color: '#D4654A',
     votes: { 'tiktok-ban': true, 'insulin-cap': false, 'border-wall': true, 'student-debt': false, 'assault-weapons': false },
     yearsInOffice: 12, state: 'TX', chamber: 'Senate',
     committees: ['Commerce', 'Judiciary', 'Foreign Relations'],
-    hotTake: { text: 'Joined Democrats in voting to ban TikTok — rare bipartisan move', breakFrom: 'Usually opposes government intervention in private business' }
+    hotTake: { text: 'Joined Democrats in voting to ban TikTok — rare bipartisan move', breakFrom: 'Usually opposes government intervention in private business' },
+    independenceScore: 8,
+    topDonors: [
+      { name: 'Club for Growth', amount: '$1.8M', type: 'pac' },
+      { name: 'Senate Conservatives Fund', amount: '$890K', type: 'pac' },
+      { name: 'Goldman Sachs', amount: '$362K', type: 'org' },
+      { name: 'Energy Transfer Partners', amount: '$245K', type: 'org' }
+    ],
+    portfolio: [
+      { holding: 'Goldman Sachs accounts', value: '$1M–$5M' },
+      { holding: 'Berkshire Hathaway', value: '$100K–$250K' },
+      { holding: 'Energy sector ETFs', value: '$250K–$500K' }
+    ],
+    lobbyingExposure: { total: '$4.8M', topIndustry: 'Oil & Gas', pct: 41 }
   },
   { id: 'rep-aoc', name: 'Alexandria Ocasio-Cortez', title: 'Rep · D-NY-14', party: 'D', color: '#7B61C7',
     votes: { 'tiktok-ban': false, 'insulin-cap': true, 'border-wall': false, 'student-debt': true, 'assault-weapons': true },
     yearsInOffice: 6, state: 'NY', chamber: 'House',
     committees: ['Financial Services', 'Oversight'],
-    hotTake: { text: 'One of few Democrats to vote against the TikTok ban', breakFrom: 'Split from party leadership on free speech grounds' }
+    hotTake: { text: 'One of few Democrats to vote against the TikTok ban', breakFrom: 'Split from party leadership on free speech grounds' },
+    independenceScore: 22,
+    topDonors: [
+      { name: 'Individual small donors', amount: '$4.7M', type: 'individual' },
+      { name: 'MoveOn.org', amount: '$320K', type: 'pac' },
+      { name: 'Sunrise Movement', amount: '$180K', type: 'pac' }
+    ],
+    portfolio: [
+      { holding: 'No reportable assets', value: '—' }
+    ],
+    lobbyingExposure: { total: '$890K', topIndustry: 'Tech', pct: 28 }
   },
   { id: 'sen-collins', name: 'Susan Collins', title: 'Senator · R-ME', party: 'R', color: '#D4A03C',
     votes: { 'tiktok-ban': true, 'insulin-cap': true, 'border-wall': false, 'student-debt': false, 'assault-weapons': true },
     yearsInOffice: 28, state: 'ME', chamber: 'Senate',
     committees: ['Appropriations', 'Intelligence', 'Health'],
-    hotTake: { text: 'Crossed party lines to support both the insulin cap and assault weapons ban', breakFrom: 'One of the most bipartisan voting records in the Senate' }
+    hotTake: { text: 'Crossed party lines to support both the insulin cap and assault weapons ban', breakFrom: 'One of the most bipartisan voting records in the Senate' },
+    independenceScore: 47,
+    topDonors: [
+      { name: 'Emily\'s List', amount: '$412K', type: 'pac' },
+      { name: 'Bath Iron Works', amount: '$198K', type: 'org' },
+      { name: 'Planned Parenthood', amount: '$165K', type: 'pac' },
+      { name: 'National Rifle Association', amount: '$142K', type: 'pac' }
+    ],
+    portfolio: [
+      { holding: 'US Treasury bonds', value: '$500K–$1M' },
+      { holding: 'Fidelity mutual funds', value: '$250K–$500K' }
+    ],
+    lobbyingExposure: { total: '$3.2M', topIndustry: 'Defense', pct: 38 }
   },
   { id: 'sen-fetterman', name: 'John Fetterman', title: 'Senator · D-PA', party: 'D', color: '#5BA58B',
     votes: { 'tiktok-ban': true, 'insulin-cap': true, 'border-wall': true, 'student-debt': true, 'assault-weapons': false },
     yearsInOffice: 2, state: 'PA', chamber: 'Senate',
     committees: ['Agriculture', 'Banking', 'Environment'],
-    hotTake: { text: 'Voted for border wall funding AND against the assault weapons ban', breakFrom: 'Broke from progressive wing on two high-profile issues' }
+    hotTake: { text: 'Voted for border wall funding AND against the assault weapons ban', breakFrom: 'Broke from progressive wing on two high-profile issues' },
+    independenceScore: 38,
+    topDonors: [
+      { name: 'Individual small donors', amount: '$12.3M', type: 'individual' },
+      { name: 'ActBlue', amount: '$2.1M', type: 'pac' },
+      { name: 'United Steelworkers', amount: '$340K', type: 'pac' }
+    ],
+    portfolio: [
+      { holding: 'Personal residence', value: '$500K–$1M' },
+      { holding: 'Savings accounts', value: '$100K–$250K' }
+    ],
+    lobbyingExposure: { total: '$1.4M', topIndustry: 'Agriculture', pct: 32 }
   }
 ];
 
@@ -1855,34 +1919,99 @@ function openRepExpanded(repId) {
     });
   }
   
+  const indepColor = rep.independenceScore >= 30 ? 'var(--surprise)' : 'var(--muted)';
+  
   const html = `
     <div class="rep-expanded-back" onclick="switchTab('reps')">&larr; All Representatives</div>
-    <div class="rep-header">
-      <div class="rep-avatar-large" style="background:${rep.color}">${rep.name.split(' ').map(n=>n[0]).join('')}</div>
-      <div class="rep-name-large">${rep.name}</div>
-      <div class="rep-detail-large">${rep.title}</div>
-      <div class="rep-compat-label">Overall compatibility</div>
-      <div class="rep-compat" style="color:${compat >= 60 ? 'var(--agree)' : compat <= 40 ? 'var(--disagree)' : 'var(--muted)'}">${compat}%</div>
-      <div class="rep-card-days" style="text-align:center;margin-top:4px">Based on ${stats.total} issues across 15 days</div>
+    
+    <div style="text-align:center;margin-bottom:24px">
+      <div class="rep-avatar-large" style="background:${rep.color};margin:0 auto 12px">${rep.name.split(' ').map(n=>n[0]).join('')}</div>
+      <div style="font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700">${rep.name}</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:2px">${rep.title}</div>
     </div>
     
-    <div class="rep-card-hottake" style="background:var(--card);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
+    <!-- Compat + Independence side by side -->
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <div style="flex:1;background:var(--card);border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);text-align:center">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px">Your Match</div>
+        <div style="font-family:'Source Serif 4',Georgia,serif;font-size:32px;font-weight:700;color:${compat >= 60 ? 'var(--agree)' : compat <= 40 ? 'var(--disagree)' : 'var(--muted)'}">${compat}%</div>
+      </div>
+      <div style="flex:1;background:var(--card);border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);text-align:center">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px">Independence</div>
+        <div style="font-family:'Source Serif 4',Georgia,serif;font-size:32px;font-weight:700;color:${indepColor}">${rep.independenceScore}%</div>
+      </div>
+    </div>
+    <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:20px">Based on ${stats.total} issues across 15 days</div>
+    
+    <!-- Broke Ranks -->
+    <div style="background:var(--card);border-radius:14px;padding:16px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
       <div class="hottake-label">Broke ranks</div>
       <div class="hottake-text">${rep.hotTake.text}</div>
       <div class="hottake-break">${rep.hotTake.breakFrom}</div>
     </div>
     
-    <div style="margin-bottom:24px">
+    <!-- Compatibility by Issue -->
+    <div style="margin-bottom:16px">
       <div class="match-list-title">Compatibility by issue</div>
-      <div style="background:var(--card);border-radius:14px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
+      <div style="background:var(--card);border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
         ${catDetail}
       </div>
     </div>
     
-    <div class="committee-list" style="margin-bottom:24px">
-      ${rep.committees.map(c => `<div class="committee-pill">${c}</div>`).join('')}
+    <!-- Follow the Money -->
+    <div style="margin-bottom:16px">
+      <div class="match-list-title">Follow the Money</div>
+      
+      <!-- Top Donors -->
+      <div style="background:var(--card);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px">Top Donors</div>
+        ${rep.topDonors.map(d => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--surface)">
+            <div>
+              <div style="font-size:14px;font-weight:500">${d.name}</div>
+              <div style="font-size:11px;color:var(--muted)">${d.type === 'pac' ? 'PAC' : d.type === 'org' ? 'Organization' : 'Individual'}</div>
+            </div>
+            <div style="font-family:'Source Serif 4',Georgia,serif;font-size:15px;font-weight:600">${d.amount}</div>
+          </div>
+        `).join('')}
+      </div>
+      
+      <!-- Portfolio -->
+      <div style="background:var(--card);border-radius:14px;padding:16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px">Portfolio</div>
+        ${rep.portfolio.map(p => `
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--surface)">
+            <div style="font-size:14px;font-weight:500">${p.holding}</div>
+            <div style="font-size:13px;color:var(--muted)">${p.value}</div>
+          </div>
+        `).join('')}
+      </div>
+      
+      <!-- Lobbying -->
+      <div style="background:var(--card);border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:10px">Lobbying Exposure</div>
+        <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:8px">
+          <div style="font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700">${rep.lobbyingExposure.total}</div>
+          <div style="font-size:12px;color:var(--muted)">from lobbying-connected donors</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="flex:1;height:6px;background:var(--surface);border-radius:3px;overflow:hidden">
+            <div style="height:100%;width:${rep.lobbyingExposure.pct}%;background:var(--disagree);border-radius:3px"></div>
+          </div>
+          <div style="font-size:12px;color:var(--muted)">${rep.lobbyingExposure.pct}% ${rep.lobbyingExposure.topIndustry}</div>
+        </div>
+      </div>
     </div>
     
+    <!-- Committees -->
+    <div style="margin-bottom:16px">
+      <div class="match-list-title">Committees</div>
+      <div class="committee-list">
+        ${rep.committees.map(c => `<div class="committee-pill">${c}</div>`).join('')}
+      </div>
+    </div>
+    
+    <!-- Vote History -->
     <div class="vote-timeline">
       <div class="match-list-title">Recent vote history</div>
       ${voteHistory.map(v => `
@@ -1896,11 +2025,12 @@ function openRepExpanded(repId) {
         </div>`).join('')}
     </div>
     
-    <div style="padding:20px 0;text-align:center">
+    <!-- Stats -->
+    <div style="padding:16px 0">
       <div class="rep-card-stats" style="border-radius:14px;overflow:hidden">
-        <div class="rep-stat"><div class="rep-stat-val">${rep.yearsInOffice}</div><div class="rep-stat-label">Years in office</div></div>
+        <div class="rep-stat"><div class="rep-stat-val">${rep.yearsInOffice}</div><div class="rep-stat-label">Years</div></div>
         <div class="rep-stat"><div class="rep-stat-val">${rep.state}</div><div class="rep-stat-label">State</div></div>
-        <div class="rep-stat"><div class="rep-stat-val">${rep.chamber}</div><div class="rep-stat-label">Chamber</div></div>
+        <div class="rep-stat"><div class="rep-stat-val">${rep.committees.length}</div><div class="rep-stat-label">Committees</div></div>
       </div>
     </div>
   `;
