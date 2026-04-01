@@ -25,6 +25,9 @@
    STREAK BADGE: Coin-drop sound, satisfying weight
    SHARE COPY: Crisp 'stamp' sound — like a passport stamp
    DAILY REFRESH: Newspaper unfold sound, papery and warm
+   TAB SWITCH: Soft page-turn rustle
+   FINGERPRINT DRAW: Pen-on-paper scratch, building as shape draws
+   REP CARD EXPAND: Accordion unfold, papery
    ============================================ */
 
 @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,300;8..60,400;8..60,600;8..60,700&family=DM+Sans:wght@400;500;600;700&display=swap');
@@ -45,6 +48,7 @@
   --card-shadow-lifted: 0 12px 40px rgba(0,0,0,0.15), 0 4px 12px rgba(0,0,0,0.1);
   --radius: 16px;
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  --nav-height: 64px;
 }
 
 html, body {
@@ -60,21 +64,46 @@ html, body {
 /* ─── SCREENS ─── */
 .screen { 
   position: absolute; inset: 0; 
+  bottom: calc(var(--nav-height) + var(--safe-bottom));
   display: flex; flex-direction: column;
   opacity: 0; pointer-events: none;
-  transition: opacity 0.4s ease, transform 0.4s ease;
-  transform: translateY(8px);
+  transition: opacity 0.3s ease;
 }
 .screen.active { 
   opacity: 1; pointer-events: all; 
-  transform: translateY(0);
 }
+/* Full-screen overlays (game, rep-profile) sit above the nav */
+.screen.overlay {
+  bottom: 0;
+}
+
+/* ─── BOTTOM NAV ─── */
+.bottom-nav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  height: calc(var(--nav-height) + var(--safe-bottom));
+  padding-bottom: var(--safe-bottom);
+  background: var(--bg);
+  border-top: 1px solid var(--surface);
+  display: flex; align-items: center; justify-content: space-around;
+  z-index: 100;
+}
+.bottom-nav.hidden { display: none; }
+.nav-item {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 8px 20px;
+  cursor: pointer;
+  color: var(--muted);
+  transition: color 0.2s;
+  -webkit-tap-highlight-color: transparent;
+}
+.nav-item.active { color: var(--text); }
+.nav-item svg { width: 24px; height: 24px; }
+.nav-label { font-size: 10px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
 
 /* ─── SPLASH / START ─── */
 #splash {
   justify-content: center; align-items: center;
   padding: 40px 32px;
-  padding-bottom: calc(40px + var(--safe-bottom));
 }
 .splash-mark {
   width: 64px; height: 64px;
@@ -233,10 +262,10 @@ html, body {
   transform: rotate(-12deg);
 }
 
-/* Bottom action zone — thumb territory */
+/* Bottom action zone */
 .action-zone {
   padding: 8px 40px 24px;
-  padding-bottom: calc(24px + var(--safe-bottom));
+  padding-bottom: 24px;
   display: flex; justify-content: center; align-items: center; gap: 48px;
 }
 .action-btn {
@@ -254,7 +283,6 @@ html, body {
 .action-btn.agree-btn { border-color: var(--agree); color: var(--agree); }
 .action-btn svg { width: 28px; height: 28px; }
 
-/* Skip / it's complicated */
 .skip-link {
   text-align: center; padding: 0 0 8px;
   font-size: 13px; color: var(--muted);
@@ -263,18 +291,18 @@ html, body {
 }
 .skip-link:hover { opacity: 0.7; }
 
-/* ─── RESULTS / MATCH REVEAL ─── */
+/* ─── RESULTS ─── */
 #results {
   overflow-y: auto; -webkit-overflow-scrolling: touch;
-  padding: 0 0 calc(32px + var(--safe-bottom));
+  padding: 0;
 }
 .results-inner {
   padding: 32px 24px;
   max-width: 440px;
   margin: 0 auto;
+  padding-bottom: 32px;
 }
 
-/* Match reveal animation */
 .match-reveal {
   text-align: center;
   padding: 40px 0 32px;
@@ -318,10 +346,7 @@ html, body {
   margin-top: 12px;
 }
 
-/* Match list */
-.match-list {
-  margin-top: 32px;
-}
+.match-list { margin-top: 32px; }
 .match-list-title {
   font-size: 12px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 2px;
@@ -357,10 +382,7 @@ html, body {
   font-size: 24px; font-weight: 700;
 }
 
-/* Stance breakdown */
-.stance-breakdown {
-  margin-top: 32px;
-}
+.stance-breakdown { margin-top: 32px; }
 .stance-row {
   background: var(--card);
   border-radius: 14px;
@@ -378,25 +400,15 @@ html, body {
   display: flex; align-items: center; gap: 12px;
   font-size: 14px;
 }
-.stance-you, .stance-them {
-  display: flex; align-items: center; gap: 6px;
-}
-.stance-dot {
-  width: 10px; height: 10px; border-radius: 50%;
-}
+.stance-you, .stance-them { display: flex; align-items: center; gap: 6px; }
+.stance-dot { width: 10px; height: 10px; border-radius: 50%; }
 .stance-dot.agree { background: var(--agree); }
 .stance-dot.disagree { background: var(--disagree); }
 .stance-dot.skip { background: var(--muted); }
-.stance-vs {
-  color: var(--muted); font-size: 11px; font-weight: 600;
-}
+.stance-vs { color: var(--muted); font-size: 11px; font-weight: 600; }
 .stance-match-icon { margin-left: auto; font-size: 18px; }
 
-/* Share card */
-.share-section {
-  margin-top: 32px;
-  text-align: center;
-}
+.share-section { margin-top: 32px; text-align: center; }
 .share-grid {
   background: var(--text);
   color: var(--bg);
@@ -408,73 +420,49 @@ html, body {
 .share-grid-title {
   font-size: 12px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 2px;
-  opacity: 0.5;
-  margin-bottom: 12px;
+  opacity: 0.5; margin-bottom: 12px;
 }
-.share-grid-date {
-  font-size: 11px; opacity: 0.4; margin-bottom: 16px;
-}
-.share-rows {
-  display: flex; flex-direction: column; gap: 6px;
-  align-items: center;
-}
-.share-row {
-  display: flex; gap: 6px;
-}
-.share-block {
-  width: 32px; height: 32px;
-  border-radius: 6px;
-}
+.share-grid-date { font-size: 11px; opacity: 0.4; margin-bottom: 16px; }
+.share-rows { display: flex; flex-direction: column; gap: 6px; align-items: center; }
+.share-row { display: flex; gap: 6px; }
+.share-block { width: 32px; height: 32px; border-radius: 6px; }
 .share-block.agree-match { background: var(--agree); }
 .share-block.agree-nomatch { background: rgba(74,144,217,0.25); }
 .share-block.disagree-match { background: var(--disagree); }
 .share-block.disagree-nomatch { background: rgba(212,101,74,0.25); }
 .share-block.skip-block { background: rgba(255,255,255,0.15); }
-.share-prompt {
-  font-size: 14px; font-weight: 600;
-  margin-top: 8px;
-  opacity: 0.7;
-}
+.share-prompt { font-size: 14px; font-weight: 600; margin-top: 8px; opacity: 0.7; }
 
 .share-btn {
-  width: 100%;
-  padding: 16px;
-  background: var(--text);
-  color: var(--bg);
+  width: 100%; padding: 16px;
+  background: var(--text); color: var(--bg);
   border: none; border-radius: 14px;
   font-family: inherit; font-size: 16px; font-weight: 600;
-  cursor: pointer;
-  transition: transform 0.15s;
+  cursor: pointer; transition: transform 0.15s;
 }
 .share-btn:active { transform: scale(0.97); }
 
-/* Deep dive link */
-.deepdive-section {
-  margin-top: 24px;
-}
+.deepdive-section { margin-top: 24px; }
 .deepdive-card {
   background: var(--card);
   border-radius: 14px;
   padding: 20px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
-  cursor: pointer;
-  transition: transform 0.15s;
+  cursor: pointer; transition: transform 0.15s;
 }
 .deepdive-card:active { transform: scale(0.98); }
 .deepdive-label {
   font-size: 11px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 2px;
-  color: var(--muted);
-  margin-bottom: 8px;
+  color: var(--muted); margin-bottom: 8px;
 }
 .deepdive-title {
   font-family: 'Source Serif 4', Georgia, serif;
-  font-size: 18px; font-weight: 600;
-  margin-bottom: 4px;
+  font-size: 18px; font-weight: 600; margin-bottom: 4px;
 }
 .deepdive-sub { font-size: 13px; color: var(--muted); }
 
-/* ─── REP PROFILE (modal-style) ─── */
+/* ─── REP PROFILE (overlay) ─── */
 #rep-profile {
   overflow-y: auto; -webkit-overflow-scrolling: touch;
   background: var(--bg);
@@ -483,15 +471,13 @@ html, body {
   padding: 24px;
   max-width: 440px;
   margin: 0 auto;
-  padding-bottom: calc(32px + var(--safe-bottom));
+  padding-bottom: 32px;
 }
 .rep-back {
   font-size: 14px; color: var(--muted); cursor: pointer;
   margin-bottom: 24px; display: inline-block;
 }
-.rep-header {
-  text-align: center; margin-bottom: 32px;
-}
+.rep-header { text-align: center; margin-bottom: 32px; }
 .rep-avatar-large {
   width: 80px; height: 80px;
   border-radius: 20px;
@@ -515,9 +501,7 @@ html, body {
   text-transform: uppercase; letter-spacing: 2px;
   color: var(--muted);
 }
-.rep-votes-section {
-  margin-top: 32px;
-}
+.rep-votes-section { margin-top: 32px; }
 .rep-vote-row {
   background: var(--card);
   border-radius: 14px;
@@ -528,12 +512,477 @@ html, body {
 .rep-vote-topic {
   font-size: 12px; font-weight: 700;
   text-transform: uppercase; letter-spacing: 1.5px;
-  color: var(--muted);
-  margin-bottom: 6px;
+  color: var(--muted); margin-bottom: 6px;
 }
 .rep-vote-stance {
   font-size: 15px; font-weight: 500;
   display: flex; align-items: center; gap: 8px;
+}
+
+/* ═══════════════════════════════════════
+   REPS TAB
+   ═══════════════════════════════════════ */
+#reps-tab {
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+.reps-inner {
+  padding: 24px;
+  max-width: 440px;
+  margin: 0 auto;
+  padding-bottom: 24px;
+}
+.reps-header {
+  margin-bottom: 24px;
+}
+.reps-title {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 28px; font-weight: 700;
+  margin-bottom: 4px;
+}
+.reps-subtitle {
+  font-size: 14px; color: var(--muted);
+}
+/* Filter pills */
+.reps-filters {
+  display: flex; gap: 8px; margin-bottom: 24px;
+  overflow-x: auto;
+  -ms-overflow-style: none; scrollbar-width: none;
+}
+.reps-filters::-webkit-scrollbar { display: none; }
+.filter-pill {
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 13px; font-weight: 600;
+  background: var(--surface);
+  color: var(--muted);
+  border: none; cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+.filter-pill.active {
+  background: var(--text);
+  color: var(--bg);
+}
+
+/* Rep profile card — the "dating profile" */
+.rep-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  margin-bottom: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.rep-card:active { transform: scale(0.985); }
+.rep-card-top {
+  padding: 24px 24px 0;
+  display: flex; align-items: flex-start; gap: 16px;
+}
+.rep-card-avatar {
+  width: 56px; height: 56px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 22px; font-weight: 700; color: white;
+  flex-shrink: 0;
+}
+.rep-card-info { flex: 1; min-width: 0; }
+.rep-card-name {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 20px; font-weight: 600;
+  margin-bottom: 2px;
+}
+.rep-card-title {
+  font-size: 13px; color: var(--muted);
+}
+.rep-card-compat {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 32px; font-weight: 700;
+  flex-shrink: 0;
+  line-height: 1;
+}
+.rep-card-compat-label {
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted);
+  text-align: right;
+}
+
+/* Compat trend — sparkline area */
+.rep-card-trend {
+  padding: 16px 24px;
+  display: flex; align-items: center; gap: 12px;
+}
+.trend-label {
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.trend-spark {
+  flex: 1; height: 32px;
+}
+.trend-spark svg { width: 100%; height: 100%; }
+.trend-delta {
+  font-size: 13px; font-weight: 600;
+}
+.trend-delta.up { color: var(--agree); }
+.trend-delta.down { color: var(--disagree); }
+.trend-delta.flat { color: var(--muted); }
+
+/* Hot take section */
+.rep-card-hottake {
+  padding: 0 24px 20px;
+}
+.hottake-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--surprise);
+  margin-bottom: 6px;
+}
+.hottake-text {
+  font-size: 14px; line-height: 1.45;
+  color: var(--text);
+}
+.hottake-break {
+  font-size: 12px; color: var(--muted);
+  margin-top: 4px;
+}
+
+/* Stats strip */
+.rep-card-stats {
+  padding: 14px 24px;
+  background: var(--surface);
+  display: flex; gap: 0;
+}
+.rep-stat {
+  flex: 1;
+  text-align: center;
+}
+.rep-stat-val {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 18px; font-weight: 700;
+}
+.rep-stat-label {
+  font-size: 10px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted);
+}
+
+/* Stance bar — compact horizontal viz */
+.rep-card-stances {
+  padding: 16px 24px 20px;
+}
+.stance-bar-row {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 8px;
+}
+.stance-bar-row:last-child { margin-bottom: 0; }
+.stance-bar-cat {
+  font-size: 11px; font-weight: 600;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted);
+  width: 72px; flex-shrink: 0;
+}
+.stance-bar-track {
+  flex: 1; height: 6px;
+  background: var(--surface);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.stance-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.stance-bar-icon {
+  width: 16px; text-align: center;
+  font-size: 12px;
+}
+
+/* Days badge on card */
+.rep-card-days {
+  font-size: 11px; color: var(--muted);
+  padding: 0 24px 16px;
+}
+
+/* Expanded rep profile (from reps tab) */
+.rep-expanded {
+  padding: 24px;
+  max-width: 440px;
+  margin: 0 auto;
+}
+.rep-expanded-back {
+  font-size: 14px; color: var(--muted);
+  cursor: pointer; margin-bottom: 24px;
+  display: inline-block;
+}
+
+/* Committee pills */
+.committee-list {
+  display: flex; flex-wrap: wrap; gap: 6px;
+  margin-top: 12px;
+}
+.committee-pill {
+  padding: 6px 12px;
+  background: var(--surface);
+  border-radius: 8px;
+  font-size: 12px; font-weight: 500;
+  color: var(--muted);
+}
+
+/* Vote history timeline */
+.vote-timeline {
+  margin-top: 24px;
+}
+.vote-tl-item {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.vote-tl-date {
+  font-size: 11px; color: var(--muted); font-weight: 600;
+  margin-bottom: 4px;
+}
+.vote-tl-issue {
+  font-size: 15px; font-weight: 500;
+  margin-bottom: 4px;
+}
+.vote-tl-stance {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 13px;
+}
+.vote-tl-you { margin-left: auto; font-size: 12px; color: var(--muted); }
+
+/* ═══════════════════════════════════════
+   FINGERPRINT TAB
+   ═══════════════════════════════════════ */
+#fingerprint-tab {
+  overflow-y: auto; -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+.fp-inner {
+  padding: 24px;
+  max-width: 440px;
+  margin: 0 auto;
+  padding-bottom: 24px;
+}
+.fp-header {
+  text-align: center;
+  margin-bottom: 8px;
+}
+.fp-title {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 28px; font-weight: 700;
+  margin-bottom: 4px;
+}
+.fp-subtitle {
+  font-size: 14px; color: var(--muted);
+}
+.fp-days-played {
+  font-size: 12px; color: var(--muted);
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+/* Radar canvas container */
+.fp-radar-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 320px;
+  margin: 0 auto 32px;
+}
+.fp-radar-wrap canvas {
+  width: 100%; height: 100%;
+}
+/* Axis labels positioned around the canvas */
+.fp-axis-labels {
+  position: absolute; inset: 0;
+  pointer-events: none;
+}
+.fp-axis-label {
+  position: absolute;
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1px;
+  color: var(--muted);
+  transform: translate(-50%, -50%);
+  pointer-events: auto;
+  cursor: pointer;
+  transition: color 0.2s;
+  text-align: center;
+}
+.fp-axis-label.active { color: var(--text); }
+
+/* Issue detail — expandable cards below radar */
+.fp-issue-cards { margin-bottom: 32px; }
+.fp-issue-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.fp-issue-card:active { transform: scale(0.98); }
+.fp-issue-top {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.fp-issue-cat {
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+}
+.fp-issue-pips {
+  display: flex; gap: 4px;
+}
+.fp-pip {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+}
+.fp-pip.agree { background: var(--agree); }
+.fp-pip.disagree { background: var(--disagree); }
+.fp-pip.skip { background: var(--surface); }
+.fp-issue-detail {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.3s ease;
+}
+.fp-issue-card.expanded .fp-issue-detail {
+  max-height: 200px;
+}
+.fp-issue-detail-inner {
+  padding-top: 12px;
+  font-size: 13px; color: var(--muted);
+  line-height: 1.5;
+}
+
+/* Insights section */
+.fp-insights { margin-bottom: 32px; }
+.fp-section-title {
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 16px;
+}
+.fp-insight-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 20px;
+  margin-bottom: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.fp-insight-icon {
+  font-size: 12px;
+  color: var(--surprise);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  margin-bottom: 8px;
+}
+.fp-insight-text {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 17px; font-weight: 400;
+  line-height: 1.45;
+}
+.fp-insight-sub {
+  font-size: 13px; color: var(--muted);
+  margin-top: 6px;
+}
+
+/* Drift visualization */
+.fp-drift { margin-bottom: 32px; }
+.fp-drift-chart {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+}
+.fp-drift-canvas-wrap {
+  width: 100%; height: 160px;
+  position: relative;
+}
+.fp-drift-canvas-wrap canvas {
+  width: 100%; height: 100%;
+}
+.fp-drift-legend {
+  display: flex; gap: 16px;
+  margin-top: 12px;
+  justify-content: center;
+}
+.fp-drift-legend-item {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; color: var(--muted);
+}
+.fp-drift-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+}
+
+/* Closest match */
+.fp-closest { margin-bottom: 32px; }
+.fp-closest-card {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 20px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  display: flex; align-items: center; gap: 16px;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+.fp-closest-card:active { transform: scale(0.98); }
+.fp-closest-avatar {
+  width: 52px; height: 52px;
+  border-radius: 14px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 20px; font-weight: 700; color: white;
+  flex-shrink: 0;
+}
+.fp-closest-info { flex: 1; }
+.fp-closest-label {
+  font-size: 10px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 1.5px;
+  color: var(--match-gold);
+  margin-bottom: 4px;
+}
+.fp-closest-name {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 18px; font-weight: 600;
+}
+.fp-closest-sub { font-size: 13px; color: var(--muted); }
+.fp-closest-score {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 28px; font-weight: 700;
+}
+
+/* Share fingerprint */
+.fp-share { text-align: center; }
+.fp-share-card {
+  background: var(--text);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 16px;
+  position: relative;
+  overflow: hidden;
+}
+.fp-share-canvas-wrap {
+  width: 200px; height: 200px;
+  margin: 0 auto 16px;
+}
+.fp-share-canvas-wrap canvas { width: 100%; height: 100%; }
+.fp-share-label {
+  font-size: 12px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: rgba(245,240,234,0.4);
+  margin-bottom: 4px;
+}
+.fp-share-tagline {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 16px;
+  color: var(--bg);
 }
 
 /* ─── ANIMATIONS ─── */
@@ -551,21 +1000,24 @@ html, body {
 .card-exit-right { animation: fly-out-right 0.3s ease forwards; }
 .card-exit-left { animation: fly-out-left 0.3s ease forwards; }
 
-@keyframes count-up-pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
 }
+.fade-up { animation: fade-up 0.4s ease forwards; }
+.fade-up-d1 { animation-delay: 0.1s; opacity: 0; }
+.fade-up-d2 { animation-delay: 0.2s; opacity: 0; }
+.fade-up-d3 { animation-delay: 0.3s; opacity: 0; }
+.fade-up-d4 { animation-delay: 0.4s; opacity: 0; }
 
 /* Copied toast */
 .toast {
-  position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+  position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%);
   background: var(--text); color: var(--bg);
   padding: 12px 24px; border-radius: 10px;
   font-size: 14px; font-weight: 600;
   opacity: 0; transition: opacity 0.3s;
-  z-index: 999;
-  pointer-events: none;
+  z-index: 999; pointer-events: none;
 }
 .toast.show { opacity: 1; }
 
@@ -574,6 +1026,7 @@ html, body {
   .card-statement { font-size: 19px; }
   .swipe-card { padding: 24px 20px; }
   .match-pct { font-size: 60px; }
+  .fp-radar-wrap { max-width: 280px; }
 }
 </style>
 </head>
@@ -581,32 +1034,31 @@ html, body {
 
 <!-- ═══════════ SPLASH ═══════════ -->
 <div id="splash" class="screen active">
-  <div class="splash-mark">
-    <svg viewBox="0 0 24 24" fill="none" stroke="#F5F0EA" stroke-width="2.5" stroke-linecap="round">
-      <path d="M12 3L20 7.5V16.5L12 21L4 16.5V7.5L12 3Z"/>
-      <path d="M12 12L20 7.5"/>
-      <path d="M12 12V21"/>
-      <path d="M12 12L4 7.5"/>
-    </svg>
-  </div>
-  <div class="splash-title">Primary</div>
-  <div class="splash-sub">5 issues. Your honest take.<br>See who you actually match with.</div>
-  <div class="splash-streak" id="streakBadge"></div>
-  <div id="splashAction">
-    <button class="start-btn" onclick="startGame()">
-      Today's Match
-      <span class="btn-hint">Apr 1 · takes ~60 seconds</span>
-    </button>
+  <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; padding: 40px 32px;">
+    <div class="splash-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#F5F0EA" stroke-width="2.5" stroke-linecap="round">
+        <path d="M12 3L20 7.5V16.5L12 21L4 16.5V7.5L12 3Z"/>
+        <path d="M12 12L20 7.5"/><path d="M12 12V21"/><path d="M12 12L4 7.5"/>
+      </svg>
+    </div>
+    <div class="splash-title">Primary</div>
+    <div class="splash-sub">5 issues. Your honest take.<br>See who you actually match with.</div>
+    <div class="splash-streak" id="streakBadge"></div>
+    <div id="splashAction">
+      <button class="start-btn" onclick="startGame()">
+        Today's Match
+        <span class="btn-hint">Apr 1 · takes ~60 seconds</span>
+      </button>
+    </div>
   </div>
 </div>
 
 <!-- ═══════════ GAME ═══════════ -->
-<div id="game" class="screen">
+<div id="game" class="screen overlay">
   <div class="game-header">
     <div class="progress-dots" id="progressDots"></div>
     <div class="game-topic-label" id="topicLabel"></div>
   </div>
-  
   <div class="card-area" id="cardArea">
     <div class="swipe-card" id="swipeCard">
       <div class="swipe-indicator agree">Agree</div>
@@ -616,9 +1068,7 @@ html, body {
       <div class="card-context" id="cardContext"></div>
     </div>
   </div>
-  
   <div class="skip-link" onclick="skipCard()">it's complicated — skip</div>
-  
   <div class="action-zone">
     <button class="action-btn disagree-btn" onclick="swipeLeft()">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
@@ -638,9 +1088,50 @@ html, body {
   <div class="results-inner" id="resultsInner"></div>
 </div>
 
-<!-- ═══════════ REP PROFILE ═══════════ -->
-<div id="rep-profile" class="screen">
+<!-- ═══════════ REP PROFILE (overlay from results) ═══════════ -->
+<div id="rep-profile" class="screen overlay">
   <div class="rep-profile-inner" id="repProfileInner"></div>
+</div>
+
+<!-- ═══════════ REPS TAB ═══════════ -->
+<div id="reps-tab" class="screen">
+  <div class="reps-inner" id="repsInner"></div>
+</div>
+
+<!-- ═══════════ REP EXPANDED (from reps tab) ═══════════ -->
+<div id="rep-expanded" class="screen overlay">
+  <div class="rep-expanded" id="repExpandedInner"></div>
+</div>
+
+<!-- ═══════════ FINGERPRINT TAB ═══════════ -->
+<div id="fingerprint-tab" class="screen">
+  <div class="fp-inner" id="fpInner"></div>
+</div>
+
+<!-- ═══════════ BOTTOM NAV ═══════════ -->
+<div class="bottom-nav" id="bottomNav">
+  <div class="nav-item active" data-tab="match" onclick="switchTab('match')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M12 3L20 7.5V16.5L12 21L4 16.5V7.5L12 3Z"/>
+    </svg>
+    <span class="nav-label">Match</span>
+  </div>
+  <div class="nav-item" data-tab="reps" onclick="switchTab('reps')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 014-4h4a4 4 0 014 4v2"/>
+      <circle cx="19" cy="7" r="3" opacity="0.5"/><path d="M21 21v-2a3 3 0 00-3-3" opacity="0.5"/>
+    </svg>
+    <span class="nav-label">Reps</span>
+  </div>
+  <div class="nav-item" data-tab="fingerprint" onclick="switchTab('fingerprint')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+      <path d="M12 10a2 2 0 00-2 2c0 1.02-.1 2.51-.26 4"/>
+      <path d="M8.65 14.57a8.4 8.4 0 01-.15-1.57 3.5 3.5 0 117 0c0 1.22-.1 2.8-.28 4.37"/>
+      <path d="M6.09 15.34A10 10 0 016 14a6 6 0 1112 0c0 1.36-.07 3.06-.17 4.68"/>
+      <path d="M3.97 16.66A12 12 0 013.5 14a8.5 8.5 0 1117 0c0 .72-.02 1.64-.07 2.67"/>
+    </svg>
+    <span class="nav-label">You</span>
+  </div>
 </div>
 
 <!-- Toast -->
@@ -648,122 +1139,209 @@ html, body {
 
 <script>
 // ═══════════════════════════════════════════════
-// PRIMARY MATCH — Game Engine
+// PRIMARY MATCH — Game Engine + Tabs
 // ═══════════════════════════════════════════════
 
-// ─── TODAY'S ISSUES (mock data — would come from Orion Council API) ───
+// ─── TODAY'S ISSUES ───
 const TODAY = {
   date: '2025-04-01',
   issues: [
-    {
-      id: 'tiktok-ban',
-      category: 'Tech',
-      statement: 'The government should have the power to ban foreign-owned social media platforms if they pose a national security risk.',
-      context: 'Congress passed a law requiring TikTok to divest from ByteDance or face a ban. 170M Americans use the app.',
-      topicSlug: 'tiktok-ban-supreme-court'
-    },
-    {
-      id: 'insulin-cap',
-      category: 'Healthcare',
-      statement: 'Insulin prices should be capped at $35/month for all Americans, even if pharmaceutical companies say it will reduce innovation.',
-      context: '1 in 4 diabetics have rationed insulin due to cost. The current cap only applies to Medicare patients.',
-      topicSlug: 'insulin-price-cap'
-    },
-    {
-      id: 'border-wall',
-      category: 'Immigration',
-      statement: 'Federal funding should prioritize physical barriers at the southern border over processing and asylum infrastructure.',
-      context: 'Border encounters hit record highs in 2024. The existing wall covers ~700 of 1,954 miles.',
-      topicSlug: 'border-security-funding'
-    },
-    {
-      id: 'student-debt',
-      category: 'Economy',
-      statement: 'The federal government should forgive up to $20,000 in student loan debt for borrowers earning under $125,000.',
-      context: '43M Americans hold student debt averaging $37,000. Total: $1.77 trillion.',
-      topicSlug: 'student-loan-forgiveness'
-    },
-    {
-      id: 'assault-weapons',
-      category: 'Rights',
-      statement: 'Civilians should be prohibited from purchasing semi-automatic rifles classified as assault weapons.',
-      context: 'The 1994 assault weapons ban expired in 2004. Mass shooting deaths have tripled since.',
-      topicSlug: 'assault-weapons-ban'
-    }
+    { id: 'tiktok-ban', category: 'Tech', statement: 'The government should have the power to ban foreign-owned social media platforms if they pose a national security risk.', context: 'Congress passed a law requiring TikTok to divest from ByteDance or face a ban. 170M Americans use the app.', topicSlug: 'tiktok-ban-supreme-court' },
+    { id: 'insulin-cap', category: 'Healthcare', statement: 'Insulin prices should be capped at $35/month for all Americans, even if pharmaceutical companies say it will reduce innovation.', context: '1 in 4 diabetics have rationed insulin due to cost. The current cap only applies to Medicare patients.', topicSlug: 'insulin-price-cap' },
+    { id: 'border-wall', category: 'Immigration', statement: 'Federal funding should prioritize physical barriers at the southern border over processing and asylum infrastructure.', context: 'Border encounters hit record highs in 2024. The existing wall covers ~700 of 1,954 miles.', topicSlug: 'border-security-funding' },
+    { id: 'student-debt', category: 'Economy', statement: 'The federal government should forgive up to $20,000 in student loan debt for borrowers earning under $125,000.', context: '43M Americans hold student debt averaging $37,000. Total: $1.77 trillion.', topicSlug: 'student-loan-forgiveness' },
+    { id: 'assault-weapons', category: 'Rights', statement: 'Civilians should be prohibited from purchasing semi-automatic rifles classified as assault weapons.', context: 'The 1994 assault weapons ban expired in 2004. Mass shooting deaths have tripled since.', topicSlug: 'assault-weapons-ban' }
   ]
 };
 
-// ─── REPRESENTATIVES (mock — would come from VoteView + member data) ───
+// ─── REPS ───
 const REPS = [
-  {
-    id: 'sen-warren',
-    name: 'Elizabeth Warren',
-    title: 'Senator · D-MA',
-    party: 'D',
-    color: '#4A90D9',
-    votes: { 'tiktok-ban': true, 'insulin-cap': true, 'border-wall': false, 'student-debt': true, 'assault-weapons': true }
+  { id: 'sen-warren', name: 'Elizabeth Warren', title: 'Senator · D-MA', party: 'D', color: '#4A90D9',
+    votes: { 'tiktok-ban': true, 'insulin-cap': true, 'border-wall': false, 'student-debt': true, 'assault-weapons': true },
+    yearsInOffice: 12, state: 'MA', chamber: 'Senate',
+    committees: ['Banking', 'Finance', 'Armed Services'],
+    hotTake: { text: 'Voted to ban TikTok despite being its most viral senator', breakFrom: 'Usually opposes tech regulation that limits consumer access' }
   },
-  {
-    id: 'sen-cruz',
-    name: 'Ted Cruz',
-    title: 'Senator · R-TX',
-    party: 'R',
-    color: '#D4654A',
-    votes: { 'tiktok-ban': true, 'insulin-cap': false, 'border-wall': true, 'student-debt': false, 'assault-weapons': false }
+  { id: 'sen-cruz', name: 'Ted Cruz', title: 'Senator · R-TX', party: 'R', color: '#D4654A',
+    votes: { 'tiktok-ban': true, 'insulin-cap': false, 'border-wall': true, 'student-debt': false, 'assault-weapons': false },
+    yearsInOffice: 12, state: 'TX', chamber: 'Senate',
+    committees: ['Commerce', 'Judiciary', 'Foreign Relations'],
+    hotTake: { text: 'Joined Democrats in voting to ban TikTok — rare bipartisan move', breakFrom: 'Usually opposes government intervention in private business' }
   },
-  {
-    id: 'rep-aoc',
-    name: 'Alexandria Ocasio-Cortez',
-    title: 'Rep · D-NY-14',
-    party: 'D',
-    color: '#7B61C7',
-    votes: { 'tiktok-ban': false, 'insulin-cap': true, 'border-wall': false, 'student-debt': true, 'assault-weapons': true }
+  { id: 'rep-aoc', name: 'Alexandria Ocasio-Cortez', title: 'Rep · D-NY-14', party: 'D', color: '#7B61C7',
+    votes: { 'tiktok-ban': false, 'insulin-cap': true, 'border-wall': false, 'student-debt': true, 'assault-weapons': true },
+    yearsInOffice: 6, state: 'NY', chamber: 'House',
+    committees: ['Financial Services', 'Oversight'],
+    hotTake: { text: 'One of few Democrats to vote against the TikTok ban', breakFrom: 'Split from party leadership on free speech grounds' }
   },
-  {
-    id: 'sen-collins',
-    name: 'Susan Collins',
-    title: 'Senator · R-ME',
-    party: 'R',
-    color: '#D4A03C',
-    votes: { 'tiktok-ban': true, 'insulin-cap': true, 'border-wall': false, 'student-debt': false, 'assault-weapons': true }
+  { id: 'sen-collins', name: 'Susan Collins', title: 'Senator · R-ME', party: 'R', color: '#D4A03C',
+    votes: { 'tiktok-ban': true, 'insulin-cap': true, 'border-wall': false, 'student-debt': false, 'assault-weapons': true },
+    yearsInOffice: 28, state: 'ME', chamber: 'Senate',
+    committees: ['Appropriations', 'Intelligence', 'Health'],
+    hotTake: { text: 'Crossed party lines to support both the insulin cap and assault weapons ban', breakFrom: 'One of the most bipartisan voting records in the Senate' }
   },
-  {
-    id: 'sen-fetterman',
-    name: 'John Fetterman',
-    title: 'Senator · D-PA',
-    party: 'D',
-    color: '#5BA58B',
-    votes: { 'tiktok-ban': true, 'insulin-cap': true, 'border-wall': true, 'student-debt': true, 'assault-weapons': false }
+  { id: 'sen-fetterman', name: 'John Fetterman', title: 'Senator · D-PA', party: 'D', color: '#5BA58B',
+    votes: { 'tiktok-ban': true, 'insulin-cap': true, 'border-wall': true, 'student-debt': true, 'assault-weapons': false },
+    yearsInOffice: 2, state: 'PA', chamber: 'Senate',
+    committees: ['Agriculture', 'Banking', 'Environment'],
+    hotTake: { text: 'Voted for border wall funding AND against the assault weapons ban', breakFrom: 'Broke from progressive wing on two high-profile issues' }
   }
 ];
 
+// ─── MOCK HISTORICAL DATA (15 days of play) ───
+const CATEGORIES = ['Tech', 'Healthcare', 'Immigration', 'Economy', 'Rights', 'Environment'];
+const CATEGORY_COLORS = {
+  'Tech': '#7B61C7',
+  'Healthcare': '#D4654A',
+  'Immigration': '#D4A03C',
+  'Economy': '#4A90D9',
+  'Rights': '#5BA58B',
+  'Environment': '#8B6F47'
+};
+
+// Each day: array of {category, userVote (true/false/null), repVotes: {repId: bool}}
+// This simulates 15 days of gameplay for the fingerprint/reps tabs
+const MOCK_HISTORY = (function() {
+  const days = [];
+  const catIssues = {
+    'Tech': ['AI regulation', 'Data privacy', 'Net neutrality', 'Crypto regulation', 'TikTok ban'],
+    'Healthcare': ['Insulin cap', 'Medicare expansion', 'Drug pricing', 'ACA strengthening', 'Mental health funding'],
+    'Immigration': ['Border wall', 'DACA pathway', 'Visa reform', 'Asylum process', 'E-Verify mandate'],
+    'Economy': ['Student debt', 'Min wage hike', 'Tax reform', 'Housing subsidy', 'Trade tariffs'],
+    'Rights': ['Assault weapons', 'Voting rights', 'Privacy amendment', 'Police reform', 'Marriage equality'],
+    'Environment': ['Carbon tax', 'EV mandate', 'Pipeline approval', 'Clean energy subsidy', 'Drilling ban']
+  };
+  // User's simulated positions (leans progressive on healthcare/rights/environment, moderate on economy/tech, conservative-ish on immigration)
+  const userLeanings = { 'Tech': 0.5, 'Healthcare': 0.8, 'Immigration': 0.3, 'Economy': 0.6, 'Rights': 0.85, 'Environment': 0.7 };
+  
+  for (let d = 0; d < 15; d++) {
+    const dayIssues = [];
+    const usedCats = [];
+    for (let i = 0; i < 5; i++) {
+      let cat;
+      do { cat = CATEGORIES[Math.floor(Math.random() * 6)]; } while (usedCats.includes(cat) && usedCats.length < 6);
+      usedCats.push(cat);
+      const lean = userLeanings[cat] + (Math.random() - 0.5) * 0.3;
+      const userVote = Math.random() < 0.05 ? null : Math.random() < lean;
+      // Rep votes correlate with their party/character
+      const repVotes = {};
+      REPS.forEach(r => {
+        if (r.party === 'D') repVotes[r.id] = Math.random() < (cat === 'Immigration' ? 0.3 : 0.7);
+        else repVotes[r.id] = Math.random() < (cat === 'Immigration' ? 0.8 : 0.4);
+        // Collins is moderate
+        if (r.id === 'sen-collins') repVotes[r.id] = Math.random() < 0.5;
+        // Fetterman is unpredictable
+        if (r.id === 'sen-fetterman') repVotes[r.id] = Math.random() < 0.55;
+      });
+      dayIssues.push({ category: cat, userVote, repVotes });
+    }
+    days.push({ date: `2025-03-${String(18 + d).padStart(2, '0')}`, issues: dayIssues });
+  }
+  return days;
+})();
+
+// Compute accumulated stats from mock history
+function computeHistoricalStats() {
+  const catStats = {};
+  CATEGORIES.forEach(c => { catStats[c] = { agrees: 0, disagrees: 0, skips: 0, total: 0 }; });
+  
+  const repScores = {};
+  REPS.forEach(r => { repScores[r.id] = { agree: 0, total: 0, byCategory: {}, trend: [] }; 
+    CATEGORIES.forEach(c => { repScores[r.id].byCategory[c] = { agree: 0, total: 0 }; });
+  });
+  
+  // Track drift: first 5 days vs last 5 days
+  const earlyStats = {}; const lateStats = {};
+  CATEGORIES.forEach(c => { earlyStats[c] = { agrees: 0, total: 0 }; lateStats[c] = { agrees: 0, total: 0 }; });
+  
+  MOCK_HISTORY.forEach((day, dayIdx) => {
+    const dayRepMatch = {};
+    REPS.forEach(r => { dayRepMatch[r.id] = { agree: 0, total: 0 }; });
+    
+    day.issues.forEach(issue => {
+      catStats[issue.category].total++;
+      if (issue.userVote === true) catStats[issue.category].agrees++;
+      else if (issue.userVote === false) catStats[issue.category].disagrees++;
+      else catStats[issue.category].skips++;
+      
+      if (dayIdx < 5) { earlyStats[issue.category].total++; if (issue.userVote === true) earlyStats[issue.category].agrees++; }
+      if (dayIdx >= 10) { lateStats[issue.category].total++; if (issue.userVote === true) lateStats[issue.category].agrees++; }
+      
+      if (issue.userVote !== null) {
+        REPS.forEach(r => {
+          repScores[r.id].total++;
+          repScores[r.id].byCategory[issue.category].total++;
+          if (issue.userVote === issue.repVotes[r.id]) {
+            repScores[r.id].agree++;
+            repScores[r.id].byCategory[issue.category].agree++;
+            dayRepMatch[r.id].agree++;
+          }
+          dayRepMatch[r.id].total++;
+        });
+      }
+    });
+    
+    // Running compat for trend
+    REPS.forEach(r => {
+      const cumAgree = repScores[r.id].agree;
+      const cumTotal = repScores[r.id].total;
+      repScores[r.id].trend.push(cumTotal > 0 ? Math.round((cumAgree / cumTotal) * 100) : 50);
+    });
+  });
+  
+  return { catStats, repScores, earlyStats, lateStats };
+}
+
+const HIST = computeHistoricalStats();
+
 // ─── STATE ───
 let currentIndex = 0;
-let answers = []; // true=agree, false=disagree, null=skip
+let answers = [];
 let isDragging = false;
 let startX = 0, startY = 0, currentX = 0;
 let cardEl, cardArea;
+let currentTab = 'match';
+let returnScreen = 'results'; // where rep-profile goes back to
 
 // ─── PERSISTENCE ───
-function getStore() {
-  try { return JSON.parse(localStorage.getItem('primary_match') || '{}'); } 
-  catch { return {}; }
-}
-function setStore(data) {
-  localStorage.setItem('primary_match', JSON.stringify({ ...getStore(), ...data }));
+function getStore() { try { return JSON.parse(localStorage.getItem('primary_match') || '{}'); } catch { return {}; } }
+function setStore(data) { localStorage.setItem('primary_match', JSON.stringify({ ...getStore(), ...data })); }
+
+// ─── TAB SWITCHING ───
+function switchTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.tab === tab));
+  
+  // Hide all non-overlay screens
+  document.querySelectorAll('.screen:not(.overlay)').forEach(s => s.classList.remove('active'));
+  // Hide overlays too
+  document.querySelectorAll('.screen.overlay').forEach(s => s.classList.remove('active'));
+  
+  if (tab === 'match') {
+    const store = getStore();
+    if (store.lastPlayed === TODAY.date && store.answers) {
+      showScreen('results');
+    } else {
+      showScreen('splash');
+    }
+  } else if (tab === 'reps') {
+    buildRepsTab();
+    showScreen('reps-tab');
+  } else if (tab === 'fingerprint') {
+    showScreen('fingerprint-tab');
+    setTimeout(() => buildFingerprintTab(), 50);
+  }
+  
+  document.getElementById('bottomNav').classList.remove('hidden');
 }
 
 // ─── INIT ───
 function init() {
   const store = getStore();
-  
-  // Check if played today
   if (store.lastPlayed === TODAY.date && store.answers) {
     showSplashPlayed(store);
     return;
   }
-  
-  // Show streak
   if (store.streak && store.streak > 1) {
     const badge = document.getElementById('streakBadge');
     badge.style.display = 'block';
@@ -775,39 +1353,32 @@ function showSplashPlayed(store) {
   const action = document.getElementById('splashAction');
   action.innerHTML = `
     <div class="played-today">
-      <p>You've matched today.<br>Come back tomorrow for 5 new issues.</p>
-      <br>
-      <button class="start-btn" onclick="showResults()" style="background: var(--surface); color: var(--text);">
-        See Today's Results
-      </button>
-    </div>
-  `;
+      <p>You've matched today.<br>Come back tomorrow for 5 new issues.</p><br>
+      <button class="start-btn" onclick="showResults()" style="background: var(--surface); color: var(--text);">See Today's Results</button>
+    </div>`;
   answers = store.answers;
 }
 
 function startGame() {
-  currentIndex = 0;
-  answers = [];
+  currentIndex = 0; answers = [];
+  document.getElementById('bottomNav').classList.add('hidden');
   showScreen('game');
   renderCard();
 }
 
-// ─── SCREEN MANAGEMENT ───
 function showScreen(id) {
-  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  // Only deactivate non-overlay screens if showing a non-overlay, etc.
+  if (!document.getElementById(id).classList.contains('overlay')) {
+    document.querySelectorAll('.screen:not(.overlay)').forEach(s => s.classList.remove('active'));
+  }
+  document.querySelectorAll('.screen.overlay').forEach(s => s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
 
 // ─── CARD RENDERING ───
 function renderCard() {
-  if (currentIndex >= TODAY.issues.length) {
-    finishGame();
-    return;
-  }
-  
+  if (currentIndex >= TODAY.issues.length) { finishGame(); return; }
   const issue = TODAY.issues[currentIndex];
-  
-  // Progress dots
   const dotsHtml = TODAY.issues.map((_, i) => {
     let cls = 'progress-dot';
     if (i < currentIndex) cls += ' done';
@@ -816,189 +1387,117 @@ function renderCard() {
   }).join('');
   document.getElementById('progressDots').innerHTML = dotsHtml;
   document.getElementById('topicLabel').textContent = `${currentIndex + 1} of ${TODAY.issues.length}`;
-  
   document.getElementById('cardCategory').textContent = issue.category;
   document.getElementById('cardStatement').textContent = issue.statement;
   document.getElementById('cardContext').textContent = issue.context;
-  
-  // Animate in
   cardEl = document.getElementById('swipeCard');
   cardEl.className = 'swipe-card card-entering';
   cardEl.style.transform = '';
-  
-  // Reset indicators
   cardEl.querySelector('.agree').style.opacity = 0;
   cardEl.querySelector('.disagree').style.opacity = 0;
-  
   setupTouch();
 }
 
 // ─── TOUCH / SWIPE ───
 function setupTouch() {
   cardEl = document.getElementById('swipeCard');
-  cardArea = document.getElementById('cardArea');
-  
-  // Remove old listeners by replacing node
   const newCard = cardEl.cloneNode(true);
   cardEl.parentNode.replaceChild(newCard, cardEl);
   cardEl = newCard;
-  
   cardEl.addEventListener('pointerdown', onPointerDown, { passive: false });
 }
-
 function onPointerDown(e) {
-  isDragging = true;
-  startX = e.clientX;
-  startY = e.clientY;
-  currentX = 0;
+  isDragging = true; startX = e.clientX; startY = e.clientY; currentX = 0;
   cardEl.classList.add('lifted');
   cardEl.setPointerCapture(e.pointerId);
-  
   cardEl.addEventListener('pointermove', onPointerMove, { passive: false });
   cardEl.addEventListener('pointerup', onPointerUp);
   cardEl.addEventListener('pointercancel', onPointerUp);
 }
-
 function onPointerMove(e) {
-  if (!isDragging) return;
-  e.preventDefault();
-  const dx = e.clientX - startX;
-  currentX = dx;
-  
-  const rotate = dx * 0.08;
-  const maxTilt = 15;
-  const r = Math.max(-maxTilt, Math.min(maxTilt, rotate));
-  
+  if (!isDragging) return; e.preventDefault();
+  const dx = e.clientX - startX; currentX = dx;
+  const r = Math.max(-15, Math.min(15, dx * 0.08));
   cardEl.style.transform = `translateX(${dx}px) rotate(${r}deg)`;
   cardEl.style.transition = 'none';
-  
-  // Show indicators
-  const threshold = 40;
-  const agreeEl = cardEl.querySelector('.agree');
-  const disagreeEl = cardEl.querySelector('.disagree');
-  
-  if (dx > threshold) {
-    agreeEl.style.opacity = Math.min(1, (dx - threshold) / 60);
-    disagreeEl.style.opacity = 0;
-  } else if (dx < -threshold) {
-    disagreeEl.style.opacity = Math.min(1, (-dx - threshold) / 60);
-    agreeEl.style.opacity = 0;
-  } else {
-    agreeEl.style.opacity = 0;
-    disagreeEl.style.opacity = 0;
-  }
+  const t = 40;
+  const agreeEl = cardEl.querySelector('.agree'), disagreeEl = cardEl.querySelector('.disagree');
+  if (dx > t) { agreeEl.style.opacity = Math.min(1, (dx - t) / 60); disagreeEl.style.opacity = 0; }
+  else if (dx < -t) { disagreeEl.style.opacity = Math.min(1, (-dx - t) / 60); agreeEl.style.opacity = 0; }
+  else { agreeEl.style.opacity = 0; disagreeEl.style.opacity = 0; }
 }
-
 function onPointerUp(e) {
-  if (!isDragging) return;
-  isDragging = false;
+  if (!isDragging) return; isDragging = false;
   cardEl.classList.remove('lifted');
-  
   cardEl.removeEventListener('pointermove', onPointerMove);
   cardEl.removeEventListener('pointerup', onPointerUp);
   cardEl.removeEventListener('pointercancel', onPointerUp);
-  
-  const threshold = 80;
-  
-  if (currentX > threshold) {
-    commitSwipe(true);
-  } else if (currentX < -threshold) {
-    commitSwipe(false);
-  } else {
-    // Snap back
+  if (currentX > 80) commitSwipe(true);
+  else if (currentX < -80) commitSwipe(false);
+  else {
     cardEl.style.transition = 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
     cardEl.style.transform = '';
     cardEl.querySelector('.agree').style.opacity = 0;
     cardEl.querySelector('.disagree').style.opacity = 0;
   }
 }
-
 function commitSwipe(agree) {
   answers.push(agree);
-  
   cardEl.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-  if (agree) {
-    cardEl.classList.add('card-exit-right');
-  } else {
-    cardEl.classList.add('card-exit-left');
-  }
-  
-  // Haptic feedback (spec: medium impact)
+  cardEl.classList.add(agree ? 'card-exit-right' : 'card-exit-left');
   if (navigator.vibrate) navigator.vibrate(15);
-  
-  setTimeout(() => {
-    currentIndex++;
-    renderCard();
-  }, 300);
+  setTimeout(() => { currentIndex++; renderCard(); }, 300);
 }
-
 function swipeRight() { commitSwipe(true); }
 function swipeLeft() { commitSwipe(false); }
 function skipCard() {
   answers.push(null);
   cardEl.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
-  cardEl.style.transform = 'translateY(40px) scale(0.9)';
-  cardEl.style.opacity = '0';
+  cardEl.style.transform = 'translateY(40px) scale(0.9)'; cardEl.style.opacity = '0';
   setTimeout(() => { currentIndex++; renderCard(); }, 300);
 }
 
 // ─── FINISH & MATCH ───
 function finishGame() {
-  // Calculate matches
-  const matches = REPS.map(rep => {
-    let agree = 0, total = 0;
-    TODAY.issues.forEach((issue, i) => {
-      if (answers[i] === null) return;
-      total++;
-      if (answers[i] === rep.votes[issue.id]) agree++;
-    });
-    return { ...rep, score: total > 0 ? Math.round((agree / total) * 100) : 50, agree, total };
-  }).sort((a, b) => b.score - a.score);
-  
-  // Save
+  const matches = calcMatches();
   const store = getStore();
-  const streak = (store.lastPlayed && daysBetween(store.lastPlayed, TODAY.date) === 1) 
-    ? (store.streak || 1) + 1 : 1;
+  const streak = (store.lastPlayed && daysBetween(store.lastPlayed, TODAY.date) === 1) ? (store.streak || 1) + 1 : 1;
   setStore({ lastPlayed: TODAY.date, answers, streak, matches: matches.map(m => ({ id: m.id, score: m.score })) });
-  
   buildResults(matches);
+  document.getElementById('bottomNav').classList.remove('hidden');
   showScreen('results');
-  
-  // Trigger reveal animation
   setTimeout(() => {
     document.querySelector('.match-reveal').classList.add('visible');
     animateCount(document.getElementById('topMatchPct'), matches[0].score);
   }, 200);
+}
+
+function calcMatches() {
+  return REPS.map(rep => {
+    let agree = 0, total = 0;
+    TODAY.issues.forEach((issue, i) => {
+      if (answers[i] === null) return; total++;
+      if (answers[i] === rep.votes[issue.id]) agree++;
+    });
+    return { ...rep, score: total > 0 ? Math.round((agree / total) * 100) : 50, agree, total };
+  }).sort((a, b) => b.score - a.score);
 }
 
 function showResults() {
   const store = getStore();
   answers = store.answers || [];
-  const matches = REPS.map(rep => {
-    let agree = 0, total = 0;
-    TODAY.issues.forEach((issue, i) => {
-      if (answers[i] === null) return;
-      total++;
-      if (answers[i] === rep.votes[issue.id]) agree++;
-    });
-    return { ...rep, score: total > 0 ? Math.round((agree / total) * 100) : 50, agree, total };
-  }).sort((a, b) => b.score - a.score);
-  
-  buildResults(matches);
+  buildResults(calcMatches());
   showScreen('results');
   setTimeout(() => {
     document.querySelector('.match-reveal').classList.add('visible');
-    animateCount(document.getElementById('topMatchPct'), matches[0].score);
+    animateCount(document.getElementById('topMatchPct'), calcMatches()[0].score);
   }, 200);
 }
 
 function buildResults(matches) {
   const top = matches[0];
-  // Is the top match a "surprise"? (different party from majority of user's leanings)
-  const userLeanLeft = answers.filter((a, i) => a !== null).length > 0;
   const surprise = (top.party === 'R' && answers.filter(a => a === true).length > 2) ||
                    (top.party === 'D' && answers.filter(a => a === false).length > 2);
-  
   let html = `
     <div class="match-reveal">
       <div class="match-label">Your top match</div>
@@ -1007,186 +1506,684 @@ function buildResults(matches) {
       <div class="match-meta">${top.title}</div>
       ${surprise ? '<div class="surprise-tag">Surprise Match</div>' : ''}
     </div>
-    
     <div class="match-list">
       <div class="match-list-title">All Matches</div>
       ${matches.map(m => `
-        <div class="match-item" onclick="showRepProfile('${m.id}')">
+        <div class="match-item" onclick="showRepProfileFromResults('${m.id}')">
           <div class="match-item-left">
-            <div class="match-avatar" style="background: ${m.color}">${m.name.split(' ').map(n=>n[0]).join('')}</div>
-            <div>
-              <div class="match-item-name">${m.name}</div>
-              <div class="match-item-detail">${m.title}</div>
-            </div>
+            <div class="match-avatar" style="background:${m.color}">${m.name.split(' ').map(n=>n[0]).join('')}</div>
+            <div><div class="match-item-name">${m.name}</div><div class="match-item-detail">${m.title}</div></div>
           </div>
-          <div class="match-item-score" style="color: ${m.score >= 60 ? 'var(--agree)' : m.score <= 40 ? 'var(--disagree)' : 'var(--muted)'}">${m.score}%</div>
-        </div>
-      `).join('')}
+          <div class="match-item-score" style="color:${m.score >= 60 ? 'var(--agree)' : m.score <= 40 ? 'var(--disagree)' : 'var(--muted)'}">${m.score}%</div>
+        </div>`).join('')}
     </div>
-    
     <div class="stance-breakdown">
       <div class="match-list-title">Your Stances vs ${top.name.split(' ')[1]}</div>
       ${TODAY.issues.map((issue, i) => {
-        const userStance = answers[i];
-        const repStance = top.votes[issue.id];
-        const match = userStance === null ? false : userStance === repStance;
-        return `
-          <div class="stance-row">
-            <div class="stance-topic">${issue.category}</div>
-            <div class="stance-compare">
-              <div class="stance-you">
-                <div class="stance-dot ${userStance === true ? 'agree' : userStance === false ? 'disagree' : 'skip'}"></div>
-                You: ${userStance === true ? 'Agree' : userStance === false ? 'Disagree' : 'Skipped'}
-              </div>
-              <div class="stance-vs">vs</div>
-              <div class="stance-them">
-                <div class="stance-dot ${repStance ? 'agree' : 'disagree'}"></div>
-                ${repStance ? 'Yea' : 'Nay'}
-              </div>
-              <div class="stance-match-icon">${match ? '●' : '○'}</div>
-            </div>
-          </div>
-        `;
+        const uv = answers[i], rv = top.votes[issue.id], match = uv !== null && uv === rv;
+        return `<div class="stance-row"><div class="stance-topic">${issue.category}</div>
+          <div class="stance-compare">
+            <div class="stance-you"><div class="stance-dot ${uv === true ? 'agree' : uv === false ? 'disagree' : 'skip'}"></div>You: ${uv === true ? 'Agree' : uv === false ? 'Disagree' : 'Skipped'}</div>
+            <div class="stance-vs">vs</div>
+            <div class="stance-them"><div class="stance-dot ${rv ? 'agree' : 'disagree'}"></div>${rv ? 'Yea' : 'Nay'}</div>
+            <div class="stance-match-icon">${match ? '●' : '○'}</div>
+          </div></div>`;
       }).join('')}
     </div>
-    
-    <div class="share-section">
-      ${buildShareGrid()}
+    <div class="share-section">${buildShareGrid()}
       <button class="share-btn" onclick="copyShare()">Copy Results</button>
     </div>
-    
     <div class="deepdive-section">
-      <div class="match-list-title" style="margin-bottom: 12px;">Go deeper</div>
+      <div class="match-list-title" style="margin-bottom:12px">Go deeper</div>
       ${TODAY.issues.slice(0, 2).map(issue => `
-        <div class="deepdive-card" style="margin-bottom: 10px;">
+        <div class="deepdive-card" style="margin-bottom:10px">
           <div class="deepdive-label">${issue.category}</div>
           <div class="deepdive-title">${issue.statement.substring(0, 60)}...</div>
           <div class="deepdive-sub">Read the Orion Council analysis ›</div>
-        </div>
-      `).join('')}
-    </div>
-  `;
-  
+        </div>`).join('')}
+    </div>`;
   document.getElementById('resultsInner').innerHTML = html;
 }
 
 function buildShareGrid() {
-  const top = REPS.map(rep => {
-    let agree = 0, total = 0;
-    TODAY.issues.forEach((issue, i) => {
-      if (answers[i] === null) return; total++;
-      if (answers[i] === rep.votes[issue.id]) agree++;
-    });
-    return { ...rep, score: total > 0 ? Math.round((agree / total) * 100) : 50 };
-  }).sort((a, b) => b.score - a.score)[0];
-  
+  const top = calcMatches()[0];
   const rows = TODAY.issues.map((issue, i) => {
-    const user = answers[i];
-    const rep = top.votes[issue.id];
+    const user = answers[i], rep = top.votes[issue.id];
     let cls = 'skip-block';
     if (user === null) cls = 'skip-block';
     else if (user === rep) cls = user ? 'agree-match' : 'disagree-match';
     else cls = user ? 'agree-nomatch' : 'disagree-nomatch';
-    return `<div class="share-row">
-      <div class="share-block ${cls}"></div>
-    </div>`;
+    return `<div class="share-row"><div class="share-block ${cls}"></div></div>`;
   }).join('');
-  
-  return `
-    <div class="share-grid">
-      <div class="share-grid-title">Primary</div>
-      <div class="share-grid-date">${TODAY.date}</div>
-      <div class="share-rows">${rows}</div>
-      <div class="share-prompt">${top.score}% match</div>
-    </div>
-  `;
-}
-
-function getShareText() {
-  const top = REPS.map(rep => {
-    let agree = 0, total = 0;
-    TODAY.issues.forEach((issue, i) => {
-      if (answers[i] === null) return; total++;
-      if (answers[i] === rep.votes[issue.id]) agree++;
-    });
-    return { ...rep, score: total > 0 ? Math.round((agree / total) * 100) : 50 };
-  }).sort((a, b) => b.score - a.score)[0];
-  
-  const blocks = TODAY.issues.map((issue, i) => {
-    const user = answers[i];
-    const rep = top.votes[issue.id];
-    if (user === null) return '\u2B1C'; // white square
-    if (user === rep) return user ? '\u{1F7E6}' : '\u{1F7E7}'; // blue/orange square
-    return '\u2B1B'; // black square
-  }).join('');
-  
-  return `Primary ${TODAY.date}\n${blocks}\n${top.score}% match\nprimarydaily.com/match`;
+  return `<div class="share-grid"><div class="share-grid-title">Primary</div><div class="share-grid-date">${TODAY.date}</div><div class="share-rows">${rows}</div><div class="share-prompt">${top.score}% match</div></div>`;
 }
 
 function copyShare() {
-  navigator.clipboard.writeText(getShareText()).then(() => {
-    showToast('Copied to clipboard');
-  }).catch(() => {
-    showToast('Copied!');
-  });
+  const top = calcMatches()[0];
+  const blocks = TODAY.issues.map((issue, i) => {
+    const u = answers[i], r = top.votes[issue.id];
+    if (u === null) return '\u2B1C';
+    if (u === r) return u ? '\u{1F7E6}' : '\u{1F7E7}';
+    return '\u2B1B';
+  }).join('');
+  navigator.clipboard.writeText(`Primary ${TODAY.date}\n${blocks}\n${top.score}% match\nprimarydaily.com/match`).then(() => showToast('Copied to clipboard')).catch(() => showToast('Copied!'));
 }
 
-// ─── REP PROFILE ───
+// ─── REP PROFILE (from results) ───
+function showRepProfileFromResults(repId) {
+  returnScreen = 'results';
+  showRepProfile(repId);
+}
+
 function showRepProfile(repId) {
   const rep = REPS.find(r => r.id === repId);
   if (!rep) return;
-  
   let agree = 0, total = 0;
   TODAY.issues.forEach((issue, i) => {
     if (answers[i] === null) return; total++;
     if (answers[i] === rep.votes[issue.id]) agree++;
   });
   const score = total > 0 ? Math.round((agree / total) * 100) : 50;
-  
   const html = `
-    <div class="rep-back" onclick="showScreen('results')">&larr; Back to matches</div>
+    <div class="rep-back" onclick="showScreen('${returnScreen}')">&larr; Back</div>
     <div class="rep-header">
-      <div class="rep-avatar-large" style="background: ${rep.color}">${rep.name.split(' ').map(n=>n[0]).join('')}</div>
+      <div class="rep-avatar-large" style="background:${rep.color}">${rep.name.split(' ').map(n=>n[0]).join('')}</div>
       <div class="rep-name-large">${rep.name}</div>
       <div class="rep-detail-large">${rep.title}</div>
       <div class="rep-compat-label">Compatibility</div>
-      <div class="rep-compat" style="color: ${score >= 60 ? 'var(--agree)' : score <= 40 ? 'var(--disagree)' : 'var(--muted)'}">${score}%</div>
+      <div class="rep-compat" style="color:${score >= 60 ? 'var(--agree)' : score <= 40 ? 'var(--disagree)' : 'var(--muted)'}">${score}%</div>
     </div>
     <div class="rep-votes-section">
       <div class="match-list-title">How they voted</div>
       ${TODAY.issues.map((issue, i) => {
-        const voted = rep.votes[issue.id];
-        const userVote = answers[i];
-        const match = userVote !== null && userVote === voted;
-        return `
-          <div class="rep-vote-row">
-            <div class="rep-vote-topic">${issue.category}</div>
-            <div class="rep-vote-stance">
-              <div class="stance-dot ${voted ? 'agree' : 'disagree'}"></div>
-              Voted ${voted ? 'Yea' : 'Nay'}
-              ${userVote !== null ? `<span style="margin-left:auto;color:${match ? 'var(--agree)' : 'var(--disagree)'}">${match ? 'You agreed' : 'You disagreed'}</span>` : ''}
-            </div>
-          </div>
-        `;
+        const voted = rep.votes[issue.id], uv = answers[i], match = uv !== null && uv === voted;
+        return `<div class="rep-vote-row"><div class="rep-vote-topic">${issue.category}</div>
+          <div class="rep-vote-stance"><div class="stance-dot ${voted ? 'agree' : 'disagree'}"></div>Voted ${voted ? 'Yea' : 'Nay'}
+          ${uv !== null ? `<span style="margin-left:auto;color:${match ? 'var(--agree)' : 'var(--disagree)'}">${match ? 'You agreed' : 'You disagreed'}</span>` : ''}</div></div>`;
       }).join('')}
-    </div>
-  `;
-  
+    </div>`;
   document.getElementById('repProfileInner').innerHTML = html;
   showScreen('rep-profile');
 }
 
+// ═══════════════════════════════════════════════
+// REPS TAB
+// ═══════════════════════════════════════════════
+let repsFilter = 'all';
+
+function buildRepsTab() {
+  const filtered = repsFilter === 'all' ? REPS : 
+    repsFilter === 'senate' ? REPS.filter(r => r.chamber === 'Senate') :
+    REPS.filter(r => r.chamber === 'House');
+  
+  // Sort by overall historical compatibility
+  const sorted = [...filtered].sort((a, b) => {
+    const sa = HIST.repScores[a.id], sb = HIST.repScores[b.id];
+    const pa = sa.total > 0 ? sa.agree / sa.total : 0.5;
+    const pb = sb.total > 0 ? sb.agree / sb.total : 0.5;
+    return pb - pa;
+  });
+
+  let html = `
+    <div class="reps-header">
+      <div class="reps-title">Representatives</div>
+      <div class="reps-subtitle">Your compatibility after 15 days of play</div>
+    </div>
+    <div class="reps-filters">
+      <button class="filter-pill ${repsFilter === 'all' ? 'active' : ''}" onclick="setRepsFilter('all')">All</button>
+      <button class="filter-pill ${repsFilter === 'senate' ? 'active' : ''}" onclick="setRepsFilter('senate')">Senate</button>
+      <button class="filter-pill ${repsFilter === 'house' ? 'active' : ''}" onclick="setRepsFilter('house')">House</button>
+    </div>
+    ${sorted.map((rep, idx) => buildRepCard(rep, idx)).join('')}
+  `;
+  document.getElementById('repsInner').innerHTML = html;
+  
+  // Draw sparklines after DOM is ready
+  setTimeout(() => {
+    sorted.forEach(rep => drawSparkline(rep.id));
+  }, 100);
+}
+
+function setRepsFilter(f) {
+  repsFilter = f;
+  buildRepsTab();
+}
+
+function buildRepCard(rep, idx) {
+  const stats = HIST.repScores[rep.id];
+  const compat = stats.total > 0 ? Math.round((stats.agree / stats.total) * 100) : 50;
+  const trend = stats.trend;
+  const delta = trend.length >= 2 ? trend[trend.length - 1] - trend[Math.max(0, trend.length - 6)] : 0;
+  
+  // Stance bars by category
+  const stanceBars = CATEGORIES.filter(c => stats.byCategory[c].total > 0).map(cat => {
+    const cs = stats.byCategory[cat];
+    const pct = cs.total > 0 ? Math.round((cs.agree / cs.total) * 100) : 50;
+    return `<div class="stance-bar-row">
+      <div class="stance-bar-cat">${cat}</div>
+      <div class="stance-bar-track"><div class="stance-bar-fill" style="width:${pct}%;background:${CATEGORY_COLORS[cat]}"></div></div>
+      <div class="stance-bar-icon">${pct >= 60 ? '●' : pct <= 40 ? '○' : '◐'}</div>
+    </div>`;
+  }).join('');
+  
+  return `
+    <div class="rep-card fade-up" style="animation-delay:${idx * 0.08}s;opacity:0" onclick="openRepExpanded('${rep.id}')">
+      <div class="rep-card-top">
+        <div class="rep-card-avatar" style="background:${rep.color}">${rep.name.split(' ').map(n=>n[0]).join('')}</div>
+        <div class="rep-card-info">
+          <div class="rep-card-name">${rep.name}</div>
+          <div class="rep-card-title">${rep.title}</div>
+        </div>
+        <div style="text-align:right">
+          <div class="rep-card-compat" style="color:${compat >= 60 ? 'var(--agree)' : compat <= 40 ? 'var(--disagree)' : 'var(--muted)'}">${compat}%</div>
+          <div class="rep-card-compat-label">match</div>
+        </div>
+      </div>
+      <div class="rep-card-trend">
+        <div class="trend-label">15 days</div>
+        <div class="trend-spark"><canvas id="spark-${rep.id}" width="200" height="40"></canvas></div>
+        <div class="trend-delta ${delta > 0 ? 'up' : delta < 0 ? 'down' : 'flat'}">${delta > 0 ? '+' : ''}${delta}%</div>
+      </div>
+      <div class="rep-card-hottake">
+        <div class="hottake-label">Broke ranks</div>
+        <div class="hottake-text">${rep.hotTake.text}</div>
+        <div class="hottake-break">${rep.hotTake.breakFrom}</div>
+      </div>
+      <div class="rep-card-stances">${stanceBars}</div>
+      <div class="rep-card-stats">
+        <div class="rep-stat"><div class="rep-stat-val">${rep.yearsInOffice}</div><div class="rep-stat-label">Years</div></div>
+        <div class="rep-stat"><div class="rep-stat-val">${rep.state}</div><div class="rep-stat-label">State</div></div>
+        <div class="rep-stat"><div class="rep-stat-val">${rep.committees.length}</div><div class="rep-stat-label">Committees</div></div>
+      </div>
+    </div>`;
+}
+
+function drawSparkline(repId) {
+  const canvas = document.getElementById(`spark-${repId}`);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = canvas.offsetWidth * dpr;
+  canvas.height = canvas.offsetHeight * dpr;
+  ctx.scale(dpr, dpr);
+  
+  const w = canvas.offsetWidth, h = canvas.offsetHeight;
+  const trend = HIST.repScores[repId].trend;
+  if (trend.length < 2) return;
+  
+  const min = Math.min(...trend) - 5, max = Math.max(...trend) + 5;
+  const points = trend.map((v, i) => ({
+    x: (i / (trend.length - 1)) * w,
+    y: h - ((v - min) / (max - min)) * h
+  }));
+  
+  // Fill
+  ctx.beginPath();
+  ctx.moveTo(points[0].x, h);
+  points.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(points[points.length - 1].x, h);
+  ctx.closePath();
+  ctx.fillStyle = 'rgba(26,26,25,0.06)';
+  ctx.fill();
+  
+  // Line
+  ctx.beginPath();
+  points.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.strokeStyle = 'rgba(26,26,25,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  
+  // End dot
+  const last = points[points.length - 1];
+  ctx.beginPath();
+  ctx.arc(last.x, last.y, 3, 0, Math.PI * 2);
+  ctx.fillStyle = 'var(--text)';
+  ctx.fill();
+}
+
+function openRepExpanded(repId) {
+  const rep = REPS.find(r => r.id === repId);
+  if (!rep) return;
+  const stats = HIST.repScores[repId];
+  const compat = stats.total > 0 ? Math.round((stats.agree / stats.total) * 100) : 50;
+  
+  // Build stance bars
+  const catDetail = CATEGORIES.filter(c => stats.byCategory[c].total > 0).map(cat => {
+    const cs = stats.byCategory[cat];
+    const pct = cs.total > 0 ? Math.round((cs.agree / cs.total) * 100) : 50;
+    const count = cs.total;
+    return `<div class="stance-bar-row">
+      <div class="stance-bar-cat">${cat}</div>
+      <div class="stance-bar-track"><div class="stance-bar-fill" style="width:${pct}%;background:${CATEGORY_COLORS[cat]}"></div></div>
+      <div class="stance-bar-icon" style="font-size:11px;color:var(--muted)">${pct}%</div>
+    </div>`;
+  }).join('');
+  
+  // Build vote history from mock data (last 5 relevant)
+  const voteHistory = [];
+  for (let d = MOCK_HISTORY.length - 1; d >= 0 && voteHistory.length < 8; d--) {
+    MOCK_HISTORY[d].issues.forEach(issue => {
+      if (voteHistory.length >= 8) return;
+      if (issue.userVote === null) return;
+      const repVoted = issue.repVotes[repId];
+      const matched = issue.userVote === repVoted;
+      voteHistory.push({
+        date: MOCK_HISTORY[d].date,
+        category: issue.category,
+        repVoted,
+        userVoted: issue.userVote,
+        matched
+      });
+    });
+  }
+  
+  const html = `
+    <div class="rep-expanded-back" onclick="switchTab('reps')">&larr; All Representatives</div>
+    <div class="rep-header">
+      <div class="rep-avatar-large" style="background:${rep.color}">${rep.name.split(' ').map(n=>n[0]).join('')}</div>
+      <div class="rep-name-large">${rep.name}</div>
+      <div class="rep-detail-large">${rep.title}</div>
+      <div class="rep-compat-label">Overall compatibility</div>
+      <div class="rep-compat" style="color:${compat >= 60 ? 'var(--agree)' : compat <= 40 ? 'var(--disagree)' : 'var(--muted)'}">${compat}%</div>
+      <div class="rep-card-days" style="text-align:center;margin-top:4px">Based on ${stats.total} issues across 15 days</div>
+    </div>
+    
+    <div class="rep-card-hottake" style="background:var(--card);border-radius:14px;padding:20px;margin-bottom:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
+      <div class="hottake-label">Broke ranks</div>
+      <div class="hottake-text">${rep.hotTake.text}</div>
+      <div class="hottake-break">${rep.hotTake.breakFrom}</div>
+    </div>
+    
+    <div style="margin-bottom:24px">
+      <div class="match-list-title">Compatibility by issue</div>
+      <div style="background:var(--card);border-radius:14px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
+        ${catDetail}
+      </div>
+    </div>
+    
+    <div class="committee-list" style="margin-bottom:24px">
+      ${rep.committees.map(c => `<div class="committee-pill">${c}</div>`).join('')}
+    </div>
+    
+    <div class="vote-timeline">
+      <div class="match-list-title">Recent vote history</div>
+      ${voteHistory.map(v => `
+        <div class="vote-tl-item">
+          <div class="vote-tl-date">${v.date} · ${v.category}</div>
+          <div class="vote-tl-stance">
+            <div class="stance-dot ${v.repVoted ? 'agree' : 'disagree'}"></div>
+            Voted ${v.repVoted ? 'Yea' : 'Nay'}
+            <div class="vote-tl-you" style="color:${v.matched ? 'var(--agree)' : 'var(--disagree)'}">${v.matched ? '● matched' : '○ differed'}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+    
+    <div style="padding:20px 0;text-align:center">
+      <div class="rep-card-stats" style="border-radius:14px;overflow:hidden">
+        <div class="rep-stat"><div class="rep-stat-val">${rep.yearsInOffice}</div><div class="rep-stat-label">Years in office</div></div>
+        <div class="rep-stat"><div class="rep-stat-val">${rep.state}</div><div class="rep-stat-label">State</div></div>
+        <div class="rep-stat"><div class="rep-stat-val">${rep.chamber}</div><div class="rep-stat-label">Chamber</div></div>
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('repExpandedInner').innerHTML = html;
+  showScreen('rep-expanded');
+}
+
+
+// ═══════════════════════════════════════════════
+// FINGERPRINT TAB
+// ═══════════════════════════════════════════════
+
+function buildFingerprintTab() {
+  const stats = HIST.catStats;
+  
+  // Compute axis values (0-1 scale, where 1 = strong agree tendency)
+  const axes = CATEGORIES.map(cat => {
+    const s = stats[cat];
+    if (s.total === 0) return { cat, value: 0.5, agrees: 0, disagrees: 0, total: 0 };
+    return { cat, value: s.agrees / s.total, agrees: s.agrees, disagrees: s.disagrees, total: s.total };
+  });
+  
+  // Find closest rep overall
+  let closestRep = null, closestScore = 0;
+  REPS.forEach(r => {
+    const rs = HIST.repScores[r.id];
+    const score = rs.total > 0 ? Math.round((rs.agree / rs.total) * 100) : 50;
+    if (score > closestScore) { closestScore = score; closestRep = r; }
+  });
+  
+  // Generate insights
+  const insights = generateInsights();
+  
+  // Drift data
+  const driftData = CATEGORIES.map(cat => {
+    const e = HIST.earlyStats[cat], l = HIST.lateStats[cat];
+    const early = e.total > 0 ? e.agrees / e.total : 0.5;
+    const late = l.total > 0 ? l.agrees / l.total : 0.5;
+    return { cat, early, late, shift: late - early };
+  });
+  
+  let html = `
+    <div class="fp-header">
+      <div class="fp-title">Your Fingerprint</div>
+      <div class="fp-subtitle">A shape only you make</div>
+    </div>
+    <div class="fp-days-played">15 days played · ${Object.values(stats).reduce((a, s) => a + s.total, 0)} stances taken</div>
+    
+    <div class="fp-radar-wrap">
+      <canvas id="fpRadar"></canvas>
+      <div class="fp-axis-labels" id="fpAxisLabels"></div>
+    </div>
+    
+    <div class="fp-issue-cards">
+      <div class="fp-section-title">Where you stand</div>
+      ${axes.map(a => {
+        const pips = [];
+        for (let i = 0; i < a.agrees; i++) pips.push('<div class="fp-pip agree"></div>');
+        for (let i = 0; i < a.disagrees; i++) pips.push('<div class="fp-pip disagree"></div>');
+        for (let i = 0; i < (a.total - a.agrees - a.disagrees); i++) pips.push('<div class="fp-pip skip"></div>');
+        return `
+          <div class="fp-issue-card" onclick="this.classList.toggle('expanded')">
+            <div class="fp-issue-top">
+              <div class="fp-issue-cat" style="color:${CATEGORY_COLORS[a.cat]}">${a.cat}</div>
+              <div class="fp-issue-pips">${pips.join('')}</div>
+            </div>
+            <div class="fp-issue-detail">
+              <div class="fp-issue-detail-inner">
+                ${a.agrees} agrees, ${a.disagrees} disagrees across ${a.total} issues.<br>
+                You lean ${a.value > 0.6 ? 'progressive' : a.value < 0.4 ? 'conservative' : 'moderate'} on ${a.cat.toLowerCase()}.
+              </div>
+            </div>
+          </div>`;
+      }).join('')}
+    </div>
+    
+    <div class="fp-insights">
+      <div class="fp-section-title">Surprises</div>
+      ${insights.map(ins => `
+        <div class="fp-insight-card">
+          <div class="fp-insight-icon">Pattern found</div>
+          <div class="fp-insight-text">${ins.text}</div>
+          ${ins.sub ? `<div class="fp-insight-sub">${ins.sub}</div>` : ''}
+        </div>`).join('')}
+    </div>
+    
+    <div class="fp-drift">
+      <div class="fp-section-title">How you've shifted</div>
+      <div class="fp-drift-chart">
+        <div class="fp-drift-canvas-wrap"><canvas id="fpDrift"></canvas></div>
+        <div class="fp-drift-legend">
+          <div class="fp-drift-legend-item"><div class="fp-drift-dot" style="background:var(--muted)"></div>First 5 days</div>
+          <div class="fp-drift-legend-item"><div class="fp-drift-dot" style="background:var(--text)"></div>Last 5 days</div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="fp-closest">
+      <div class="fp-section-title">Closest overall match</div>
+      <div class="fp-closest-card" onclick="openRepExpanded('${closestRep.id}')">
+        <div class="fp-closest-avatar" style="background:${closestRep.color}">${closestRep.name.split(' ').map(n=>n[0]).join('')}</div>
+        <div class="fp-closest-info">
+          <div class="fp-closest-label">Your person</div>
+          <div class="fp-closest-name">${closestRep.name}</div>
+          <div class="fp-closest-sub">${closestRep.title}</div>
+        </div>
+        <div class="fp-closest-score" style="color:var(--agree)">${closestScore}%</div>
+      </div>
+    </div>
+    
+    <div class="fp-share">
+      <div class="fp-share-card">
+        <div class="fp-share-canvas-wrap"><canvas id="fpShareRadar"></canvas></div>
+        <div class="fp-share-label">Primary Fingerprint</div>
+        <div class="fp-share-tagline">15 days · ${Object.values(stats).reduce((a, s) => a + s.total, 0)} stances</div>
+      </div>
+      <button class="share-btn" onclick="copyFingerprint()">Share Your Fingerprint</button>
+    </div>
+  `;
+  
+  document.getElementById('fpInner').innerHTML = html;
+  
+  // Draw canvases
+  setTimeout(() => {
+    drawRadar('fpRadar', axes, false);
+    drawRadar('fpShareRadar', axes, true);
+    drawDrift(driftData);
+    positionAxisLabels(axes);
+  }, 100);
+}
+
+function generateInsights() {
+  const insights = [];
+  
+  // Cross-party insights: find categories where user agrees more with opposite party
+  const partyAgreement = { D: {}, R: {} };
+  CATEGORIES.forEach(cat => { partyAgreement.D[cat] = { agree: 0, total: 0 }; partyAgreement.R[cat] = { agree: 0, total: 0 }; });
+  
+  MOCK_HISTORY.forEach(day => {
+    day.issues.forEach(issue => {
+      if (issue.userVote === null) return;
+      REPS.forEach(r => {
+        partyAgreement[r.party][issue.category].total++;
+        if (issue.userVote === issue.repVotes[r.id]) partyAgreement[r.party][issue.category].agree++;
+      });
+    });
+  });
+  
+  // Find the category where R agreement is highest relative to D
+  let maxRdiff = -Infinity, maxRcat = '';
+  let maxDdiff = -Infinity, maxDcat = '';
+  CATEGORIES.forEach(cat => {
+    const dPct = partyAgreement.D[cat].total > 0 ? partyAgreement.D[cat].agree / partyAgreement.D[cat].total : 0.5;
+    const rPct = partyAgreement.R[cat].total > 0 ? partyAgreement.R[cat].agree / partyAgreement.R[cat].total : 0.5;
+    if (rPct - dPct > maxRdiff) { maxRdiff = rPct - dPct; maxRcat = cat; }
+    if (dPct - rPct > maxDdiff) { maxDdiff = dPct - rPct; maxDcat = cat; }
+  });
+  
+  if (maxRcat && maxDcat && maxRcat !== maxDcat) {
+    insights.push({
+      text: `You sided with Republicans more on ${maxRcat.toLowerCase()} but leaned Democratic on ${maxDcat.toLowerCase()}.`,
+      sub: 'Most people aren\'t consistent across every issue. That\'s the point.'
+    });
+  }
+  
+  // Find the rep they'd least expect to match with
+  let surpriseRep = null, surpriseScore = 0;
+  REPS.forEach(r => {
+    const rs = HIST.repScores[r.id];
+    const score = rs.total > 0 ? Math.round((rs.agree / rs.total) * 100) : 50;
+    if (score > 55 && r.party === 'R') { // assuming user leans slightly left from mock data
+      if (score > surpriseScore) { surpriseScore = score; surpriseRep = r; }
+    }
+  });
+  if (surpriseRep) {
+    insights.push({
+      text: `You matched ${surpriseScore}% with ${surpriseRep.name} — higher than you might think.`,
+      sub: `${surpriseRep.hotTake.breakFrom}`
+    });
+  }
+  
+  // Drift insight
+  const biggestShift = CATEGORIES.reduce((max, cat) => {
+    const e = HIST.earlyStats[cat], l = HIST.lateStats[cat];
+    const early = e.total > 0 ? e.agrees / e.total : 0.5;
+    const late = l.total > 0 ? l.agrees / l.total : 0.5;
+    const shift = Math.abs(late - early);
+    return shift > max.shift ? { cat, shift, dir: late > early ? 'more progressive' : 'more conservative' } : max;
+  }, { cat: '', shift: 0, dir: '' });
+  
+  if (biggestShift.shift > 0.1) {
+    insights.push({
+      text: `Your ${biggestShift.cat.toLowerCase()} views shifted ${biggestShift.dir} over two weeks.`,
+      sub: 'Positions evolve. That\'s not flip-flopping — it\'s thinking.'
+    });
+  }
+  
+  return insights;
+}
+
+function drawRadar(canvasId, axes, dark) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const size = canvas.parentElement.offsetWidth;
+  canvas.width = size * dpr;
+  canvas.height = size * dpr;
+  canvas.style.width = size + 'px';
+  canvas.style.height = size + 'px';
+  ctx.scale(dpr, dpr);
+  
+  const cx = size / 2, cy = size / 2;
+  const maxR = size * 0.38;
+  const n = axes.length;
+  
+  // Grid rings
+  for (let ring = 1; ring <= 4; ring++) {
+    const r = (ring / 4) * maxR;
+    ctx.beginPath();
+    for (let i = 0; i <= n; i++) {
+      const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+      const x = cx + Math.cos(angle) * r;
+      const y = cy + Math.sin(angle) * r;
+      i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.strokeStyle = dark ? 'rgba(245,240,234,0.1)' : 'rgba(26,26,25,0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+  
+  // Axis lines
+  for (let i = 0; i < n; i++) {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.lineTo(cx + Math.cos(angle) * maxR, cy + Math.sin(angle) * maxR);
+    ctx.strokeStyle = dark ? 'rgba(245,240,234,0.08)' : 'rgba(26,26,25,0.06)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+  }
+  
+  // Data polygon
+  ctx.beginPath();
+  axes.forEach((a, i) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    const r = Math.max(0.15, a.value) * maxR;
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+  ctx.closePath();
+  
+  // Fill with gradient-like appearance
+  ctx.fillStyle = dark ? 'rgba(74,144,217,0.25)' : 'rgba(74,144,217,0.12)';
+  ctx.fill();
+  ctx.strokeStyle = dark ? 'rgba(74,144,217,0.8)' : 'rgba(74,144,217,0.5)';
+  ctx.lineWidth = 2;
+  ctx.stroke();
+  
+  // Vertex dots
+  axes.forEach((a, i) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    const r = Math.max(0.15, a.value) * maxR;
+    const x = cx + Math.cos(angle) * r;
+    const y = cy + Math.sin(angle) * r;
+    ctx.beginPath();
+    ctx.arc(x, y, 4, 0, Math.PI * 2);
+    ctx.fillStyle = CATEGORY_COLORS[a.cat];
+    ctx.fill();
+  });
+}
+
+function positionAxisLabels(axes) {
+  const container = document.getElementById('fpAxisLabels');
+  if (!container) return;
+  const n = axes.length;
+  container.innerHTML = axes.map((a, i) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
+    // Place labels outside the radar
+    const pct = 50;
+    const offset = 46;
+    const x = pct + Math.cos(angle) * offset;
+    const y = pct + Math.sin(angle) * offset;
+    return `<div class="fp-axis-label" style="left:${x}%;top:${y}%;color:${CATEGORY_COLORS[a.cat]}">${a.cat}</div>`;
+  }).join('');
+}
+
+function drawDrift(driftData) {
+  const canvas = document.getElementById('fpDrift');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const w = canvas.parentElement.offsetWidth;
+  const h = canvas.parentElement.offsetHeight;
+  canvas.width = w * dpr;
+  canvas.height = h * dpr;
+  canvas.style.width = w + 'px';
+  canvas.style.height = h + 'px';
+  ctx.scale(dpr, dpr);
+  
+  const pad = { left: 60, right: 20, top: 20, bottom: 24 };
+  const chartW = w - pad.left - pad.right;
+  const chartH = h - pad.top - pad.bottom;
+  const barW = chartW / driftData.length;
+  
+  driftData.forEach((d, i) => {
+    const x = pad.left + i * barW + barW * 0.15;
+    const bw = barW * 0.3;
+    
+    // Early bar (lighter)
+    const earlyH = d.early * chartH;
+    ctx.fillStyle = 'rgba(26,26,25,0.15)';
+    ctx.beginPath();
+    ctx.roundRect(x, pad.top + chartH - earlyH, bw, earlyH, 3);
+    ctx.fill();
+    
+    // Late bar (darker)
+    const lateH = d.late * chartH;
+    ctx.fillStyle = 'rgba(26,26,25,0.6)';
+    ctx.beginPath();
+    ctx.roundRect(x + bw + 2, pad.top + chartH - lateH, bw, lateH, 3);
+    ctx.fill();
+    
+    // Category label
+    ctx.fillStyle = CATEGORY_COLORS[d.cat];
+    ctx.font = '600 9px "DM Sans"';
+    ctx.textAlign = 'center';
+    ctx.fillText(d.cat.substring(0, 4).toUpperCase(), x + bw + 1, h - 6);
+  });
+  
+  // Y-axis labels
+  ctx.fillStyle = 'rgba(26,26,25,0.3)';
+  ctx.font = '500 10px "DM Sans"';
+  ctx.textAlign = 'right';
+  ctx.fillText('Agree', pad.left - 8, pad.top + 10);
+  ctx.fillText('Disagree', pad.left - 8, pad.top + chartH);
+}
+
+function copyFingerprint() {
+  const axes = CATEGORIES.map(cat => {
+    const s = HIST.catStats[cat];
+    if (s.total === 0) return '◐';
+    const v = s.agrees / s.total;
+    return v > 0.6 ? '●' : v < 0.4 ? '○' : '◐';
+  });
+  const text = `Primary Fingerprint\n${CATEGORIES.map((c, i) => `${c}: ${axes[i]}`).join(' ')}\n15 days played\nprimarydaily.com`;
+  navigator.clipboard.writeText(text).then(() => showToast('Fingerprint copied')).catch(() => showToast('Copied!'));
+}
+
+
 // ─── UTILITIES ───
 function animateCount(el, target) {
   let current = 0;
-  const duration = 800;
   const start = performance.now();
   function tick(now) {
-    const elapsed = now - start;
-    const progress = Math.min(elapsed / duration, 1);
+    const progress = Math.min((now - start) / 800, 1);
     const eased = 1 - Math.pow(1 - progress, 3);
-    current = Math.round(eased * target);
-    el.textContent = current;
+    el.textContent = Math.round(eased * target);
     if (progress < 1) requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
