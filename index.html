@@ -2044,72 +2044,79 @@ function openRepExpanded(repId) {
 // FINGERPRINT TAB
 // ═══════════════════════════════════════════════
 
+// ─── ARCHETYPE SYSTEM (21 archetypes from iOS app) ───
 function computeArchetype(axes) {
-  // Based on the shape of your radar — what kind of political thinker are you?
-  const vals = axes.map(a => a.value);
-  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
-  const variance = vals.reduce((a, v) => a + Math.pow(v - avg, 2), 0) / vals.length;
-  const range = Math.max(...vals) - Math.min(...vals);
+  // Map our 6 categories to dimension scores (-1 to 1 scale, where positive = conservative/right lean)
+  // axes[i].value is 0-1 where 1 = always agreed (progressive lean), 0 = always disagreed
+  const dimMap = {};
+  axes.forEach(a => { dimMap[a.cat] = (a.value - 0.5) * -2; }); // flip: negative = progressive
   
-  // High variance = you think independently per issue
-  // Low variance + high avg = consistent progressive
-  // Low variance + low avg = consistent conservative
-  // Moderate avg + low variance = centrist
-  
-  if (variance > 0.06 && range > 0.5) {
-    return { name: 'The Maverick', icon: '◆', desc: 'You defy easy labels. Your views cross party lines on almost every category.' };
-  }
-  if (avg > 0.7 && variance < 0.04) {
-    return { name: 'The Progressive', icon: '◈', desc: 'You consistently favor government action and expanded rights.' };
-  }
-  if (avg < 0.3 && variance < 0.04) {
-    return { name: 'The Traditionalist', icon: '◇', desc: 'You favor limited government, individual liberty, and established institutions.' };
-  }
-  if (avg > 0.55 && avg < 0.75 && variance > 0.03) {
-    return { name: 'The Pragmatist', icon: '⬡', desc: 'You lean left but break right on specific issues. Policy over party.' };
-  }
-  if (avg > 0.25 && avg < 0.45 && variance > 0.03) {
-    return { name: 'The Populist', icon: '⬢', desc: 'You lean right but break left when it helps regular people.' };
-  }
-  if (avg >= 0.4 && avg <= 0.6 && variance < 0.03) {
-    return { name: 'The Bridge', icon: '◎', desc: 'Dead center. You see merit on both sides of almost everything.' };
-  }
-  if (variance > 0.04) {
-    return { name: 'The Free Thinker', icon: '✦', desc: 'You evaluate each issue on its merits. No party owns your mind.' };
-  }
-  return { name: 'The Independent', icon: '●', desc: 'Your views don\'t fit neatly into any box. That\'s the point.' };
+  const eco = dimMap['Economy'] || 0;      // positive = free market, negative = govt intervention
+  const soc = dimMap['Rights'] || 0;       // positive = traditional, negative = progressive
+  const env = dimMap['Environment'] || 0;  // positive = deregulate, negative = green
+  const hc  = dimMap['Healthcare'] || 0;   // positive = free market, negative = universal
+  const imm = dimMap['Immigration'] || 0;  // positive = restrictive, negative = open
+  const tech = dimMap['Tech'] || 0;        // positive = deregulate, negative = regulate
+
+  // Cross-dimensional archetypes (most specific first)
+  if (eco > 0.3 && soc < -0.2) return { name: 'The Libertarian', desc: "You believe freedom isn't a partisan idea — it's the whole point. Less government everywhere, applied consistently." };
+  if (eco > 0.2 && soc < -0.3) return { name: 'The Civil Libertarian', desc: "You're comfortable with free markets, but individual rights are where you draw the line." };
+  if (eco > 0.2 && soc < -0.2 && env < -0.2) return { name: 'The Pragmatic Progressive', desc: "You want meaningful reform and you want it to actually work. Big vision, grounded execution." };
+  if (eco < -0.3 && soc > 0.2) return { name: 'The Populist', desc: "You see a system that serves insiders and you want it rebalanced. The frustration isn't abstract — it's personal." };
+  if (eco < -0.2 && imm > 0.3) return { name: 'The Anti-Establishment', desc: "You distrust concentrated power regardless of which party holds it." };
+  if (imm > 0.4 && eco > 0.2) return { name: 'The Defense Hawk', desc: "You think a strong stance isn't just about defense — it's what makes everything else possible." };
+  if (imm > 0.3 && soc < -0.2) return { name: 'The Liberal Hawk', desc: "Progressive values at home, credible strength abroad." };
+  if (imm < -0.3 && eco < -0.2) return { name: 'The Progressive Dove', desc: "You'd rather invest in communities than conflicts. Real security starts at home." };
+  if (imm < -0.3 && eco > 0.2) return { name: 'The America First', desc: "You think the country's first obligation is to its own people. Domestic priorities first." };
+  if (soc > 0.3 && eco < -0.2) return { name: 'The Compassionate Conservative', desc: "You hold traditional values and believe they include taking care of people." };
+  if (env < -0.4 && eco < -0.2) return { name: 'The Green New Dealer', desc: "You see climate as the defining challenge and think the response should match the scale." };
+  if (env < -0.3 && eco > 0.1) return { name: 'The Market Environmentalist', desc: "You care about the planet and think innovation will get us further than regulation." };
+  if (hc < -0.4 && eco < -0.2) return { name: 'The Universal Care Advocate', desc: "You believe healthcare is a right, not a reward." };
+  if (hc > 0.3 && eco > 0.2) return { name: 'The Free Market Health Reformer', desc: "You think healthcare needs more competition, not more bureaucracy." };
+
+  // Centrist / moderate
+  const vals = Object.values(dimMap);
+  const avgAbs = vals.reduce((a, v) => a + Math.abs(v), 0) / vals.length;
+  if (avgAbs < 0.15) return { name: 'The True Independent', desc: "You evaluate every issue on its own merits. No party gets your loyalty by default." };
+  if (avgAbs < 0.25) return { name: 'The Pragmatist', desc: "You care about results, not rhetoric. If a policy works, the ideology is secondary." };
+
+  // Overall lean
+  const avgScore = vals.reduce((a, v) => a + v, 0) / vals.length;
+  if (avgScore > 0.25) return { name: 'The Constitutional Conservative', desc: "You believe the Constitution got the big things right. Limited government is the foundation." };
+  if (avgScore < -0.25) return { name: 'The Progressive Reformer', desc: "You think the system needs structural change, not just better people running it." };
+  if (avgScore > 0.1) return { name: 'The Center-Right Independent', desc: "You lean conservative but think for yourself. Party loyalty matters less than getting it right." };
+  if (avgScore < -0.1) return { name: 'The Center-Left Independent', desc: "You lean progressive but you're nobody's guaranteed vote." };
+
+  return { name: 'The Independent Thinker', desc: "Your views don't fit neatly into any single camp, and that's deliberate." };
 }
 
+// ─── LEVEL SYSTEM (from iOS DesignSystem.swift) ───
 function computeLevel(daysPlayed, totalStances) {
-  // Levels based on engagement depth
-  const levels = [
-    { num: 1, title: 'Newcomer', minStances: 0, minDays: 0 },
-    { num: 2, title: 'Curious', minStances: 10, minDays: 3 },
-    { num: 3, title: 'Engaged', minStances: 25, minDays: 5 },
-    { num: 4, title: 'Informed', minStances: 50, minDays: 10 },
-    { num: 5, title: 'Dedicated', minStances: 75, minDays: 15 },
-    { num: 6, title: 'Watchdog', minStances: 100, minDays: 20 },
-    { num: 7, title: 'Citizen', minStances: 150, minDays: 30 },
-    { num: 8, title: 'Patriot', minStances: 250, minDays: 50 },
-    { num: 9, title: 'Sentinel', minStances: 400, minDays: 75 },
-    { num: 10, title: 'Founder', minStances: 600, minDays: 100 }
+  const tiers = [
+    { title: 'Newcomer',   minStances: 0,   color: '#8E8E93' },
+    { title: 'Citizen',    minStances: 10,  color: '#6B8EAE' },
+    { title: 'Voter',      minStances: 25,  color: '#6AAFE6' },
+    { title: 'Analyst',    minStances: 50,  color: '#5EBD8C' },
+    { title: 'Strategist', minStances: 100, color: '#9B86C4' },
+    { title: 'Pundit',     minStances: 200, color: '#D4AF37' },
+    { title: 'Statesman',  minStances: 500, color: '#E8C967' }
   ];
   
-  let current = levels[0];
-  for (const l of levels) {
-    if (totalStances >= l.minStances && daysPlayed >= l.minDays) current = l;
+  let current = tiers[0], currentIdx = 0;
+  for (let i = 0; i < tiers.length; i++) {
+    if (totalStances >= tiers[i].minStances) { current = tiers[i]; currentIdx = i; }
     else break;
   }
   
-  const nextLevel = levels[Math.min(current.num, levels.length - 1)];
-  const progress = nextLevel.num > current.num 
-    ? Math.round((totalStances / nextLevel.minStances) * 100)
+  const nextTier = currentIdx < tiers.length - 1 ? tiers[currentIdx + 1] : null;
+  const progress = nextTier 
+    ? Math.round(((totalStances - current.minStances) / (nextTier.minStances - current.minStances)) * 100)
     : 100;
-  const next = current.num < 10 
-    ? `${nextLevel.minStances - totalStances} more to Lv${nextLevel.num}`
-    : 'Max level';
+  const next = nextTier 
+    ? `${nextTier.minStances - totalStances} to ${nextTier.title}`
+    : 'Max rank';
   
-  return { ...current, progress: Math.min(progress, 100), next };
+  return { ...current, num: currentIdx + 1, progress: Math.min(progress, 100), next };
 }
 
 function buildFingerprintTab() {
@@ -2168,20 +2175,21 @@ function buildFingerprintTab() {
       <div class="fp-axis-labels" id="fpAxisLabels"></div>
     </div>
     
-    <!-- Level -->
-    <div style="background:var(--card);border-radius:14px;padding:16px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.04);margin-bottom:16px;display:flex;align-items:center;gap:16px">
-      <div style="text-align:center;flex-shrink:0">
-        <div style="font-family:'Source Serif 4',Georgia,serif;font-size:36px;font-weight:700;color:var(--text);line-height:1">${level.num}</div>
-        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Level</div>
+    <!-- Level — full width below radar -->
+    <div style="background:var(--card);border-radius:14px;padding:16px 20px;box-shadow:0 1px 4px rgba(0,0,0,0.04);margin-bottom:20px;display:flex;align-items:center;gap:16px">
+      <div style="text-align:center;flex-shrink:0;min-width:48px">
+        <div style="font-family:'Source Serif 4',Georgia,serif;font-size:36px;font-weight:700;color:${level.color};line-height:1">${level.num}</div>
+        <div style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted)">Rank</div>
       </div>
       <div style="flex:1;min-width:0">
         <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
-          <div style="font-size:15px;font-weight:600;color:var(--surprise)">${level.title}</div>
+          <div style="font-size:16px;font-weight:700;color:${level.color}">${level.title}</div>
           <div style="font-size:11px;color:var(--muted)">${level.next}</div>
         </div>
         <div style="height:6px;background:var(--surface);border-radius:3px;overflow:hidden">
-          <div style="height:100%;width:${level.progress}%;background:var(--surprise);border-radius:3px;transition:width 0.6s ease"></div>
+          <div style="height:100%;width:${level.progress}%;background:${level.color};border-radius:3px;transition:width 0.6s ease"></div>
         </div>
+        <div style="font-size:11px;color:var(--muted);margin-top:4px">${totalStances} stances taken</div>
       </div>
     </div>
     
