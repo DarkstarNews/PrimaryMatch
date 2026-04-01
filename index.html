@@ -1418,9 +1418,12 @@ function switchTab(tab) {
   if (tab === 'match') {
     const store = getStore();
     if (store.lastPlayed === TODAY.date && store.answers) {
+      answers = store.answers;
+      buildResults(calcMatches());
       showScreen('results');
     } else {
       showScreen('splash');
+      init();
     }
   } else if (tab === 'reps') {
     buildRepsTab();
@@ -1862,7 +1865,7 @@ function buildRepCard(rep, idx) {
         <div class="hottake-text">${rep.hotTake.text}</div>
         <div class="hottake-break">${rep.hotTake.breakFrom}</div>
       </div>
-      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;margin-top:12px">Compatibility by Issue</div>
+      <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:8px;margin-top:16px;padding:0 4px">Compatibility by Issue</div>
       <div class="rep-card-stances">${stanceBars}</div>
       <div class="rep-card-stats">
         <div class="rep-stat"><div class="rep-stat-val">${rep.yearsInOffice}</div><div class="rep-stat-label">Years</div></div>
