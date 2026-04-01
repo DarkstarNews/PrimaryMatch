@@ -2044,6 +2044,74 @@ function openRepExpanded(repId) {
 // FINGERPRINT TAB
 // ═══════════════════════════════════════════════
 
+function computeArchetype(axes) {
+  // Based on the shape of your radar — what kind of political thinker are you?
+  const vals = axes.map(a => a.value);
+  const avg = vals.reduce((a, b) => a + b, 0) / vals.length;
+  const variance = vals.reduce((a, v) => a + Math.pow(v - avg, 2), 0) / vals.length;
+  const range = Math.max(...vals) - Math.min(...vals);
+  
+  // High variance = you think independently per issue
+  // Low variance + high avg = consistent progressive
+  // Low variance + low avg = consistent conservative
+  // Moderate avg + low variance = centrist
+  
+  if (variance > 0.06 && range > 0.5) {
+    return { name: 'The Maverick', icon: '◆', desc: 'You defy easy labels. Your views cross party lines on almost every category.' };
+  }
+  if (avg > 0.7 && variance < 0.04) {
+    return { name: 'The Progressive', icon: '◈', desc: 'You consistently favor government action and expanded rights.' };
+  }
+  if (avg < 0.3 && variance < 0.04) {
+    return { name: 'The Traditionalist', icon: '◇', desc: 'You favor limited government, individual liberty, and established institutions.' };
+  }
+  if (avg > 0.55 && avg < 0.75 && variance > 0.03) {
+    return { name: 'The Pragmatist', icon: '⬡', desc: 'You lean left but break right on specific issues. Policy over party.' };
+  }
+  if (avg > 0.25 && avg < 0.45 && variance > 0.03) {
+    return { name: 'The Populist', icon: '⬢', desc: 'You lean right but break left when it helps regular people.' };
+  }
+  if (avg >= 0.4 && avg <= 0.6 && variance < 0.03) {
+    return { name: 'The Bridge', icon: '◎', desc: 'Dead center. You see merit on both sides of almost everything.' };
+  }
+  if (variance > 0.04) {
+    return { name: 'The Free Thinker', icon: '✦', desc: 'You evaluate each issue on its merits. No party owns your mind.' };
+  }
+  return { name: 'The Independent', icon: '●', desc: 'Your views don\'t fit neatly into any box. That\'s the point.' };
+}
+
+function computeLevel(daysPlayed, totalStances) {
+  // Levels based on engagement depth
+  const levels = [
+    { num: 1, title: 'Newcomer', minStances: 0, minDays: 0 },
+    { num: 2, title: 'Curious', minStances: 10, minDays: 3 },
+    { num: 3, title: 'Engaged', minStances: 25, minDays: 5 },
+    { num: 4, title: 'Informed', minStances: 50, minDays: 10 },
+    { num: 5, title: 'Dedicated', minStances: 75, minDays: 15 },
+    { num: 6, title: 'Watchdog', minStances: 100, minDays: 20 },
+    { num: 7, title: 'Citizen', minStances: 150, minDays: 30 },
+    { num: 8, title: 'Patriot', minStances: 250, minDays: 50 },
+    { num: 9, title: 'Sentinel', minStances: 400, minDays: 75 },
+    { num: 10, title: 'Founder', minStances: 600, minDays: 100 }
+  ];
+  
+  let current = levels[0];
+  for (const l of levels) {
+    if (totalStances >= l.minStances && daysPlayed >= l.minDays) current = l;
+    else break;
+  }
+  
+  const nextLevel = levels[Math.min(current.num, levels.length - 1)];
+  const progress = nextLevel.num > current.num 
+    ? Math.round((totalStances / nextLevel.minStances) * 100)
+    : 100;
+  const next = current.num < 10 
+    ? `${nextLevel.minStances - totalStances} more to Lv${nextLevel.num}`
+    : 'Max level';
+  
+  return { ...current, progress: Math.min(progress, 100), next };
+}
+
 function buildFingerprintTab() {
   const stats = HIST.catStats;
   
@@ -2073,12 +2141,38 @@ function buildFingerprintTab() {
     return { cat, early, late, shift: late - early };
   });
   
+  // ─── ARCHETYPE ───
+  const totalStances = Object.values(stats).reduce((a, s) => a + s.total, 0);
+  const archetype = computeArchetype(axes);
+  
+  // ─── LEVEL ───
+  const level = computeLevel(HIST.daysPlayed || 15, totalStances);
+  
   let html = `
     <div class="fp-header">
       <div class="fp-title">Your Fingerprint</div>
       <div class="fp-subtitle">A shape only you make</div>
     </div>
-    <div class="fp-days-played">15 days played · ${Object.values(stats).reduce((a, s) => a + s.total, 0)} stances taken</div>
+    
+    <!-- Archetype + Level -->
+    <div style="display:flex;gap:10px;margin-bottom:16px">
+      <div style="flex:1;background:var(--card);border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);text-align:center">
+        <div style="font-size:28px;margin-bottom:6px">${archetype.icon}</div>
+        <div style="font-family:'Source Serif 4',Georgia,serif;font-size:18px;font-weight:700">${archetype.name}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;line-height:1.4">${archetype.desc}</div>
+      </div>
+      <div style="flex:0 0 100px;background:var(--card);border-radius:14px;padding:16px;box-shadow:0 1px 4px rgba(0,0,0,0.04);text-align:center;display:flex;flex-direction:column;justify-content:center">
+        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--muted);margin-bottom:4px">Level</div>
+        <div style="font-family:'Source Serif 4',Georgia,serif;font-size:32px;font-weight:700;color:var(--text)">${level.num}</div>
+        <div style="font-size:11px;font-weight:600;color:var(--surprise)">${level.title}</div>
+        <div style="margin-top:8px;height:4px;background:var(--surface);border-radius:2px;overflow:hidden">
+          <div style="height:100%;width:${level.progress}%;background:var(--surprise);border-radius:2px"></div>
+        </div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">${level.next}</div>
+      </div>
+    </div>
+    
+    <div class="fp-days-played">${HIST.daysPlayed || 15} days played · ${totalStances} stances taken</div>
     
     <div class="fp-radar-wrap">
       <canvas id="fpRadar"></canvas>
