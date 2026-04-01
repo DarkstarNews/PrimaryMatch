@@ -2,842 +2,1067 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>Primary</title>
-  <meta name="theme-color" content="#0a0a0a">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Primary Match</title>
+  <meta name="theme-color" content="#FAFAF7">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Inter:wght@400;500;600;700;800;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,700;8..60,900&family=DM+Sans:wght@400;500;600;700&display=swap');
 
     * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     :root {
-      --bg: #0a0a0a;
-      --card: #161616;
-      --card-border: #222;
-      --text: #e8e8e8;
-      --muted: #666;
-      --green: #538d4e;
-      --yellow: #b59f3b;
-      --miss: #3a3a3c;
-      --accent: #6aafe6;
-      --red: #c0392b;
-      --font-mono: 'Space Mono', monospace;
-      --font-sans: 'Inter', -apple-system, sans-serif;
+      --bg: #FAFAF7;
+      --card: #FFFFFF;
+      --border: #E8E6E1;
+      --text: #1A1A1A;
+      --muted: #8E8C87;
+      --ink: #2B4570;
+      --match: #3A7D44;
+      --match-bg: #E8F5E9;
+      --miss: #D4513D;
+      --miss-bg: #FDECEA;
+      --warm-gray: #F2F0EB;
+      --serif: 'Source Serif 4', Georgia, serif;
+      --sans: 'DM Sans', -apple-system, system-ui, sans-serif;
     }
 
-    html, body { 
-      height: 100%; 
-      background: var(--bg); 
-      color: var(--text); 
-      font-family: var(--font-sans);
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
       overflow: hidden;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* ═══ APP SHELL ═══ */
     .app {
       display: flex;
       flex-direction: column;
       height: 100%;
-      max-width: 500px;
+      max-width: 480px;
       margin: 0 auto;
     }
 
     /* ═══ HEADER ═══ */
     .header {
-      padding: 16px 20px 12px;
-      text-align: center;
-      border-bottom: 1px solid #1a1a1a;
+      padding: 16px 24px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       flex-shrink: 0;
     }
 
     .logo {
-      font-family: var(--font-mono);
-      font-size: 20px;
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 900;
+      color: var(--text);
+      letter-spacing: -0.5px;
+    }
+
+    .header-right {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .streak {
+      font-family: var(--sans);
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .streak-num {
+      font-size: 16px;
       font-weight: 700;
-      letter-spacing: 4px;
+      color: var(--ink);
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      padding: 6px 0;
+      letter-spacing: 0.3px;
+    }
+
+    /* ═══ DIVIDER ═══ */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 24px;
+    }
+
+    /* ═══ SCREENS ═══ */
+    .screen {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .screen-hidden { display: none; }
+
+    /* ═══ BALLOT SCREEN ═══ */
+    .ballot-date {
+      padding: 20px 24px 4px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 1.2px;
       text-transform: uppercase;
+    }
+
+    .ballot-title {
+      padding: 0 24px 20px;
+      font-family: var(--serif);
+      font-size: 26px;
+      font-weight: 700;
+      line-height: 1.2;
       color: var(--text);
     }
 
-    .logo-dot { color: var(--accent); }
-
-    .tagline {
-      font-size: 11px;
-      color: var(--muted);
-      letter-spacing: 1.5px;
-      text-transform: uppercase;
-      margin-top: 2px;
+    .ballot {
+      padding: 0 20px 120px;
     }
 
-    /* ═══ TABS ═══ */
-    .tabs {
+    .ballot-issue {
+      background: var(--card);
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color 0.25s ease, transform 0.15s ease;
+      cursor: pointer;
+      -webkit-user-select: none;
+      user-select: none;
+    }
+
+    .ballot-issue:active {
+      transform: scale(0.985);
+    }
+
+    .ballot-issue.voted-yes {
+      border-color: var(--match);
+      background: var(--match-bg);
+    }
+
+    .ballot-issue.voted-no {
+      border-color: var(--miss);
+      background: var(--miss-bg);
+    }
+
+    .issue-row {
       display: flex;
-      border-bottom: 1px solid #1a1a1a;
+      align-items: stretch;
+    }
+
+    .issue-body {
+      flex: 1;
+      padding: 16px 12px 16px 18px;
+    }
+
+    .issue-cat {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--ink);
+      margin-bottom: 5px;
+      opacity: 0.7;
+    }
+
+    .issue-text {
+      font-family: var(--serif);
+      font-size: 15.5px;
+      font-weight: 400;
+      line-height: 1.4;
+      color: var(--text);
+    }
+
+    .issue-buttons {
+      display: flex;
+      flex-direction: column;
+      border-left: 2px solid var(--border);
       flex-shrink: 0;
     }
 
-    .tab {
+    .issue-btn {
+      width: 56px;
       flex: 1;
-      padding: 12px;
-      text-align: center;
-      font-size: 13px;
-      font-weight: 600;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      color: var(--muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: none;
       border: none;
       cursor: pointer;
+      transition: background 0.15s;
       position: relative;
-      transition: color 0.2s;
     }
 
-    .tab.active { color: var(--text); }
-    .tab.active::after {
+    .issue-btn::after {
       content: '';
-      position: absolute;
-      bottom: 0; left: 20%; right: 20%;
-      height: 2px;
-      background: var(--accent);
-      border-radius: 1px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 2.5px solid var(--border);
+      transition: all 0.2s ease;
     }
 
-    /* ═══ CONTENT ═══ */
-    .content {
-      flex: 1;
-      overflow: hidden;
-      position: relative;
+    .issue-btn:first-child {
+      border-bottom: 1px solid var(--border);
     }
 
-    .tab-panel {
-      display: none;
-      height: 100%;
-      flex-direction: column;
+    .issue-btn.yes-btn::after {
+      border-color: var(--match);
+      opacity: 0.4;
     }
 
-    .tab-panel.active {
-      display: flex;
+    .issue-btn.no-btn::after {
+      border-color: var(--miss);
+      opacity: 0.4;
     }
 
-    /* ═══ GAME TAB ═══ */
-    .game-area {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      position: relative;
+    .ballot-issue.voted-yes .yes-btn::after {
+      background: var(--match);
+      border-color: var(--match);
+      opacity: 1;
+      box-shadow: 0 0 0 3px rgba(58,125,68,0.15);
     }
 
-    .progress-bar {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 24px;
-    }
-
-    .progress-pip {
-      width: 32px;
-      height: 5px;
-      border-radius: 3px;
+    .ballot-issue.voted-no .no-btn::after {
       background: var(--miss);
-      transition: background 0.4s;
+      border-color: var(--miss);
+      opacity: 1;
+      box-shadow: 0 0 0 3px rgba(212,81,61,0.15);
     }
 
-    .progress-pip.agree { background: var(--green); }
-    .progress-pip.disagree { background: var(--red); }
-    .progress-pip.current { background: var(--muted); animation: pulse-pip 1.5s infinite; }
-
-    @keyframes pulse-pip { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-
-    /* ═══ SWIPE CARD ═══ */
-    .card-stack {
-      position: relative;
-      width: 100%;
-      max-width: 340px;
-      height: 380px;
-    }
-
-    .swipe-card {
+    .issue-btn-label {
       position: absolute;
-      inset: 0;
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 20px;
-      padding: 32px 28px;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      cursor: grab;
-      touch-action: none;
-      user-select: none;
-      transition: box-shadow 0.2s;
-    }
-
-    .swipe-card:active { cursor: grabbing; }
-
-    .swipe-card .issue-category {
-      font-family: var(--font-mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      text-transform: uppercase;
-      color: var(--accent);
-      margin-bottom: 16px;
-    }
-
-    .swipe-card .issue-question {
-      font-size: 22px;
-      font-weight: 800;
-      line-height: 1.3;
-      color: var(--text);
-      margin-bottom: 16px;
-    }
-
-    .swipe-card .issue-context {
-      font-size: 14px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-
-    .swipe-hint {
-      position: absolute;
-      top: 20px;
-      font-family: var(--font-mono);
-      font-size: 14px;
+      font-size: 8px;
       font-weight: 700;
-      letter-spacing: 2px;
-      padding: 6px 14px;
-      border-radius: 6px;
+      letter-spacing: 0.8px;
+      text-transform: uppercase;
+    }
+
+    .yes-btn .issue-btn-label {
+      top: 4px;
+      color: var(--match);
+      opacity: 0.5;
+    }
+
+    .no-btn .issue-btn-label {
+      bottom: 4px;
+      color: var(--miss);
+      opacity: 0.5;
+    }
+
+    /* ═══ CAST BUTTON ═══ */
+    .cast-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 24px;
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      background: linear-gradient(transparent, var(--bg) 30%);
+      display: flex;
+      justify-content: center;
+      pointer-events: none;
+      z-index: 10;
+    }
+
+    .cast-btn {
+      width: 100%;
+      max-width: 432px;
+      padding: 16px;
+      background: var(--ink);
+      color: #fff;
+      border: none;
+      border-radius: 14px;
+      font-family: var(--sans);
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      cursor: pointer;
+      pointer-events: auto;
+      transition: all 0.25s ease;
       opacity: 0;
-      transition: opacity 0.15s;
+      transform: translateY(20px);
+    }
+
+    .cast-btn.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .cast-btn:active {
+      transform: scale(0.97);
+    }
+
+    .cast-btn:disabled {
+      opacity: 0.3;
       pointer-events: none;
     }
 
-    .swipe-hint.agree-hint {
-      right: 20px;
-      color: var(--green);
-      border: 2px solid var(--green);
+    .cast-count {
+      font-weight: 400;
+      opacity: 0.6;
     }
 
-    .swipe-hint.disagree-hint {
-      left: 20px;
-      color: var(--red);
-      border: 2px solid var(--red);
+    /* ═══ REVEAL SCREEN ═══ */
+    .reveal {
+      padding: 24px 20px 140px;
     }
 
-    .swipe-buttons {
-      display: flex;
-      gap: 20px;
-      margin-top: 28px;
+    .reveal-header {
+      text-align: center;
+      margin-bottom: 28px;
     }
 
-    .swipe-btn {
-      width: 64px;
-      height: 64px;
-      border-radius: 50%;
-      border: 2px solid var(--card-border);
-      background: var(--card);
-      color: var(--text);
-      font-size: 24px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.2s;
-    }
-
-    .swipe-btn:hover { transform: scale(1.1); }
-    .swipe-btn.agree-btn:hover { border-color: var(--green); background: rgba(83,141,78,0.15); }
-    .swipe-btn.disagree-btn:hover { border-color: var(--red); background: rgba(192,57,43,0.15); }
-
-    /* ═══ RESULTS ═══ */
-    .results {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      padding: 24px 20px;
-      overflow-y: auto;
-      height: 100%;
-    }
-
-    .results.active { display: flex; }
-
-    .results-header {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      letter-spacing: 2px;
+    .reveal-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--muted);
+      letter-spacing: 1.2px;
       text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
-    .results-date {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--muted);
-      margin-bottom: 24px;
+    .reveal-title {
+      font-family: var(--serif);
+      font-size: 28px;
+      font-weight: 900;
+      color: var(--text);
     }
 
-    .rep-result {
-      width: 100%;
-      max-width: 360px;
+    .rep-reveal {
       background: var(--card);
-      border: 1px solid var(--card-border);
+      border: 2px solid var(--border);
       border-radius: 16px;
       padding: 20px;
+      margin-bottom: 12px;
+      opacity: 0;
+      transform: translateY(12px);
+      transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .rep-reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .rep-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
       margin-bottom: 14px;
     }
 
     .rep-name {
+      font-family: var(--serif);
+      font-size: 18px;
       font-weight: 700;
-      font-size: 16px;
-      margin-bottom: 2px;
     }
 
-    .rep-info {
+    .rep-detail {
       font-size: 12px;
       color: var(--muted);
-      margin-bottom: 12px;
+      margin-top: 1px;
     }
 
-    .match-grid {
+    .rep-pct {
+      font-family: var(--serif);
+      font-size: 32px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .rep-pct.high { color: var(--match); }
+    .rep-pct.mid { color: #C8952E; }
+    .rep-pct.low { color: var(--miss); }
+
+    .rep-pct-label {
+      font-family: var(--sans);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--muted);
+      text-align: right;
+    }
+
+    .rep-grid {
       display: flex;
-      gap: 5px;
-      margin-bottom: 10px;
+      gap: 6px;
     }
 
-    .match-cell {
-      width: 38px;
-      height: 38px;
-      border-radius: 6px;
+    .rep-cell {
+      flex: 1;
+      height: 40px;
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 16px;
       font-weight: 700;
-      animation: flip-in 0.4s ease;
+      font-size: 14px;
+      background: var(--warm-gray);
+      color: transparent;
+      transition: all 0.4s ease;
     }
 
-    .match-cell.agree { background: var(--green); }
-    .match-cell.disagree { background: var(--red); }
-    .match-cell.skip { background: var(--miss); }
-
-    @keyframes flip-in {
-      0% { transform: scaleY(0); }
-      50% { transform: scaleY(1.1); }
-      100% { transform: scaleY(1); }
+    .rep-cell.revealed.match {
+      background: var(--match);
+      color: #fff;
     }
 
-    .match-pct {
-      font-family: var(--font-mono);
-      font-size: 28px;
+    .rep-cell.revealed.miss {
+      background: var(--miss);
+      color: #fff;
+    }
+
+    /* Check and X marks via CSS */
+    .rep-cell .cell-icon {
+      width: 16px;
+      height: 16px;
+      position: relative;
+    }
+
+    .rep-cell.match .cell-icon::before,
+    .rep-cell.match .cell-icon::after {
+      content: '';
+      position: absolute;
+      background: #fff;
+      border-radius: 1px;
+    }
+    .rep-cell.match .cell-icon::before {
+      width: 8px; height: 2.5px;
+      top: 10px; left: 0;
+      transform: rotate(45deg);
+    }
+    .rep-cell.match .cell-icon::after {
+      width: 13px; height: 2.5px;
+      top: 8px; left: 4px;
+      transform: rotate(-45deg);
+    }
+
+    .rep-cell.miss .cell-icon::before,
+    .rep-cell.miss .cell-icon::after {
+      content: '';
+      position: absolute;
+      width: 16px; height: 2.5px;
+      top: 7px; left: 0;
+      background: #fff;
+      border-radius: 1px;
+    }
+    .rep-cell.miss .cell-icon::before { transform: rotate(45deg); }
+    .rep-cell.miss .cell-icon::after { transform: rotate(-45deg); }
+
+    .rep-cell-cat {
+      font-size: 7px;
       font-weight: 700;
-    }
-
-    .match-pct.high { color: var(--green); }
-    .match-pct.mid { color: var(--yellow); }
-    .match-pct.low { color: var(--red); }
-
-    .match-label {
-      font-size: 12px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      text-align: center;
       color: var(--muted);
-      margin-left: 8px;
+      margin-top: 3px;
+      flex: 1;
     }
+
+    .rep-grid-labels {
+      display: flex;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    /* ═══ SHARE/ACTIONS BAR ═══ */
+    .actions-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 24px;
+      padding-bottom: max(16px, env(safe-area-inset-bottom));
+      background: linear-gradient(transparent, var(--bg) 30%);
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      z-index: 10;
+    }
+
+    .action-btn {
+      flex: 1;
+      max-width: 216px;
+      padding: 14px;
+      border-radius: 14px;
+      font-family: var(--sans);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.15s;
+      border: none;
+    }
+
+    .action-btn:active { transform: scale(0.96); }
 
     .share-btn {
-      margin-top: 20px;
-      padding: 14px 32px;
-      background: var(--accent);
-      color: #000;
-      border: none;
-      border-radius: 12px;
-      font-family: var(--font-mono);
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-      cursor: pointer;
-      transition: transform 0.2s, opacity 0.2s;
+      background: var(--ink);
+      color: #fff;
     }
 
-    .share-btn:hover { transform: scale(1.03); }
-    .share-btn:active { transform: scale(0.97); opacity: 0.8; }
-
-    .play-again {
-      margin-top: 12px;
-      background: none;
-      border: 1px solid var(--card-border);
-      color: var(--muted);
-      padding: 10px 24px;
-      border-radius: 10px;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-      letter-spacing: 0.5px;
+    .again-btn {
+      background: var(--warm-gray);
+      color: var(--text);
+      border: 2px solid var(--border);
     }
 
-    /* ═══ REPS TAB ═══ */
-    .reps-panel {
-      padding: 20px;
-      overflow-y: auto;
+    /* ═══ REPS SCREEN ═══ */
+    .reps-screen {
+      padding: 20px 20px 40px;
+    }
+
+    .reps-title {
+      font-family: var(--serif);
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 16px;
+      padding: 0 4px;
     }
 
     .reps-search {
       width: 100%;
       padding: 14px 18px;
       background: var(--card);
-      border: 1px solid var(--card-border);
+      border: 2px solid var(--border);
       border-radius: 12px;
       color: var(--text);
       font-size: 15px;
-      font-family: var(--font-sans);
+      font-family: var(--sans);
       outline: none;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       transition: border-color 0.2s;
     }
 
-    .reps-search:focus { border-color: var(--accent); }
+    .reps-search:focus { border-color: var(--ink); }
     .reps-search::placeholder { color: var(--muted); }
 
     .rep-card {
       background: var(--card);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 12px;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: transform 0.15s;
     }
 
-    .rep-card-header {
+    .rep-card:active { transform: scale(0.985); }
+
+    .rep-card-top {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 8px;
+      align-items: center;
     }
 
     .rep-card-name {
-      font-weight: 700;
+      font-family: var(--serif);
       font-size: 17px;
+      font-weight: 700;
+    }
+
+    .rep-card-info {
+      font-size: 12px;
+      color: var(--muted);
+      margin-top: 2px;
     }
 
     .rep-card-party {
-      font-family: var(--font-mono);
       font-size: 11px;
       font-weight: 700;
-      letter-spacing: 1px;
-      padding: 3px 8px;
-      border-radius: 4px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      letter-spacing: 0.5px;
     }
 
-    .party-r { color: #e74c3c; border: 1px solid #e74c3c33; background: #e74c3c11; }
-    .party-d { color: #3498db; border: 1px solid #3498db33; background: #3498db11; }
-    .party-i { color: #9b59b6; border: 1px solid #9b59b633; background: #9b59b611; }
-
-    .rep-card-detail {
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.6;
-    }
+    .party-r { color: var(--miss); background: var(--miss-bg); }
+    .party-d { color: var(--ink); background: #E3EDF7; }
+    .party-i { color: #7B5EA7; background: #F0EBF5; }
 
     .rep-card-votes {
       display: flex;
-      gap: 12px;
+      gap: 4px;
       margin-top: 12px;
-      flex-wrap: wrap;
     }
 
-    .vote-chip {
-      font-family: var(--font-mono);
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 6px;
-      background: var(--miss);
-      color: var(--text);
+    .rep-card-pip {
+      flex: 1;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--warm-gray);
     }
 
-    .vote-chip.yea { background: rgba(83,141,78,0.2); color: var(--green); }
-    .vote-chip.nay { background: rgba(192,57,43,0.2); color: var(--red); }
+    .rep-card-pip.yea { background: var(--match); }
+    .rep-card-pip.nay { background: var(--miss); }
 
-    /* ═══ UTILITIES ═══ */
-    .hidden { display: none !important; }
-
-    /* card shadow on drag */
-    .dragging {
-      box-shadow: 0 20px 60px rgba(0,0,0,0.5);
-      transition: none;
+    /* ═══ CONTEXT DRAWER ═══ */
+    .context-tip {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.5;
+      padding: 8px 18px 12px;
+      display: none;
     }
 
+    .ballot-issue.expanded .context-tip {
+      display: block;
+    }
+
+    /* ═══ TOAST ═══ */
     .toast {
       position: fixed;
-      bottom: 100px;
+      bottom: 90px;
       left: 50%;
       transform: translateX(-50%);
-      background: var(--card);
-      border: 1px solid var(--card-border);
-      color: var(--text);
+      background: var(--text);
+      color: var(--bg);
       padding: 12px 24px;
       border-radius: 12px;
-      font-family: var(--font-mono);
-      font-size: 13px;
+      font-size: 14px;
+      font-weight: 600;
       z-index: 999;
       animation: toast-in 0.3s ease, toast-out 0.3s ease 1.7s forwards;
+      white-space: nowrap;
     }
 
-    @keyframes toast-in { from { opacity: 0; transform: translateX(-50%) translateY(20px); } }
-    @keyframes toast-out { to { opacity: 0; transform: translateX(-50%) translateY(-10px); } }
+    @keyframes toast-in { from { opacity: 0; transform: translateX(-50%) translateY(12px); } }
+    @keyframes toast-out { to { opacity: 0; transform: translateX(-50%) translateY(-8px); } }
+
+    /* ═══ ANIMATIONS ═══ */
+    @keyframes pop-in {
+      0% { transform: scale(0.8); opacity: 0; }
+      70% { transform: scale(1.05); }
+      100% { transform: scale(1); opacity: 1; }
+    }
+
+    @keyframes slide-up {
+      from { transform: translateY(16px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .pop-in { animation: pop-in 0.4s ease forwards; }
+    .slide-up { animation: slide-up 0.4s ease forwards; }
   </style>
 </head>
 <body>
 <div class="app">
-  <!-- HEADER -->
   <div class="header">
-    <div class="logo">Primary<span class="logo-dot">.</span></div>
-    <div class="tagline">Do your reps actually rep you?</div>
+    <div class="logo">Primary Match</div>
+    <div class="header-right">
+      <div class="streak"><span class="streak-num" id="streak-num">1</span> day streak</div>
+      <button class="nav-btn" id="nav-toggle">Your Reps</button>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <!-- BALLOT SCREEN -->
+  <div class="screen" id="screen-ballot">
+    <div class="ballot-date" id="ballot-date"></div>
+    <div class="ballot-title">Today's Ballot</div>
+    <div class="ballot" id="ballot"></div>
   </div>
 
-  <!-- TABS -->
-  <div class="tabs">
-    <button class="tab active" data-tab="game">Today's Match</button>
-    <button class="tab" data-tab="reps">Your Reps</button>
+  <!-- REVEAL SCREEN -->
+  <div class="screen screen-hidden" id="screen-reveal">
+    <div class="reveal" id="reveal"></div>
   </div>
 
-  <!-- CONTENT -->
-  <div class="content">
-    
-    <!-- GAME TAB -->
-    <div class="tab-panel active" id="panel-game">
-      <div class="game-area" id="game-active">
-        <div class="progress-bar" id="progress"></div>
-        <div class="card-stack" id="card-stack"></div>
-        <div class="swipe-buttons">
-          <button class="swipe-btn disagree-btn" onclick="Game.answer(false)" title="Disagree">✕</button>
-          <button class="swipe-btn agree-btn" onclick="Game.answer(true)" title="Agree">✓</button>
-        </div>
-      </div>
-      <div class="results" id="results"></div>
+  <!-- REPS SCREEN -->
+  <div class="screen screen-hidden" id="screen-reps">
+    <div class="reps-screen">
+      <div class="reps-title">Your Representatives</div>
+      <input class="reps-search" type="text" placeholder="Search by name or state..." id="reps-search">
+      <div id="reps-list"></div>
     </div>
+  </div>
 
-    <!-- REPS TAB -->
-    <div class="tab-panel" id="panel-reps">
-      <div class="reps-panel">
-        <input class="reps-search" type="text" placeholder="Search by name or state..." id="reps-search">
-        <div id="reps-list"></div>
-      </div>
-    </div>
+  <!-- CAST BUTTON -->
+  <div class="cast-bar" id="cast-bar">
+    <button class="cast-btn" id="cast-btn" disabled>Cast Your Ballot</button>
+  </div>
 
+  <!-- ACTIONS BAR (post-reveal) -->
+  <div class="actions-bar screen-hidden" id="actions-bar">
+    <button class="action-btn again-btn" onclick="Game.reset()">New Ballot</button>
+    <button class="action-btn share-btn" onclick="Game.share()">Share Results</button>
   </div>
 </div>
 
 <script>
 // ═══════════════════════════════════════
-// DATA — Hot-button issues w/ real vote positions
+// DATA
 // ═══════════════════════════════════════
 const ISSUES = [
   {
     category: "immigration",
-    question: "The U.S. should provide a pathway to citizenship for undocumented immigrants brought here as children",
-    context: "The DREAM Act has been introduced repeatedly since 2001. ~800K people currently hold DACA status.",
+    question: "Provide a pathway to citizenship for undocumented immigrants brought here as children",
+    context: "The DREAM Act has been introduced since 2001. ~800K people hold DACA status.",
     votes: { "Sen. Cruz": false, "Sen. Cornyn": false, "Rep. Green": false, "Sen. Schumer": true, "Rep. Ocasio-Cortez": true }
   },
   {
     category: "economy",
-    question: "The federal minimum wage should be raised to $15/hour",
-    context: "The current federal minimum is $7.25, unchanged since 2009. 30 states have set higher minimums.",
+    question: "Raise the federal minimum wage to $15/hour",
+    context: "Current federal minimum: $7.25, unchanged since 2009. 30 states have set higher.",
     votes: { "Sen. Cruz": false, "Sen. Cornyn": false, "Rep. Green": false, "Sen. Schumer": true, "Rep. Ocasio-Cortez": true }
   },
   {
     category: "guns",
-    question: "Universal background checks should be required for all gun sales, including private sales",
-    context: "Current federal law only requires checks for licensed dealer sales. ~22% of gun sales may occur without checks.",
+    question: "Require universal background checks for all gun sales, including private",
+    context: "Current law only requires checks from licensed dealers. ~22% of sales may skip checks.",
     votes: { "Sen. Cruz": false, "Sen. Cornyn": true, "Rep. Green": false, "Sen. Schumer": true, "Rep. Ocasio-Cortez": true }
   },
   {
     category: "healthcare",
-    question: "The government should negotiate drug prices directly with pharmaceutical companies for Medicare",
-    context: "The Inflation Reduction Act (2022) allowed Medicare to negotiate prices on 10 drugs starting 2026.",
+    question: "Let Medicare negotiate drug prices directly with pharmaceutical companies",
+    context: "The Inflation Reduction Act allowed Medicare to negotiate on 10 drugs starting 2026.",
     votes: { "Sen. Cruz": false, "Sen. Cornyn": false, "Rep. Green": false, "Sen. Schumer": true, "Rep. Ocasio-Cortez": true }
   },
   {
     category: "climate",
-    question: "The U.S. should set legally binding targets to reach net-zero carbon emissions by 2050",
+    question: "Set legally binding targets to reach net-zero carbon emissions by 2050",
     context: "The U.S. rejoined the Paris Agreement in 2021. Current policies project ~40% reduction by 2030.",
     votes: { "Sen. Cruz": false, "Sen. Cornyn": false, "Rep. Green": false, "Sen. Schumer": true, "Rep. Ocasio-Cortez": true }
   },
   {
     category: "tech",
-    question: "Social media companies should be required to verify user ages and restrict access for minors",
-    context: "Multiple states have passed age verification laws. The Kids Online Safety Act passed the Senate in 2024.",
+    question: "Require social media companies to verify ages and restrict access for minors",
+    context: "The Kids Online Safety Act passed the Senate in 2024 with bipartisan support.",
     votes: { "Sen. Cruz": true, "Sen. Cornyn": true, "Rep. Green": true, "Sen. Schumer": true, "Rep. Ocasio-Cortez": false }
   },
   {
     category: "education",
-    question: "The federal government should forgive up to $20,000 in student loan debt per borrower",
-    context: "Total U.S. student debt is ~$1.75 trillion across 45 million borrowers. Average balance: ~$38K.",
+    question: "Forgive up to $20,000 in federal student loan debt per borrower",
+    context: "Total U.S. student debt: ~$1.75 trillion across 45 million borrowers.",
     votes: { "Sen. Cruz": false, "Sen. Cornyn": false, "Rep. Green": false, "Sen. Schumer": true, "Rep. Ocasio-Cortez": true }
   }
 ];
 
 const REPS = [
-  { name: "Ted Cruz", title: "Senator", state: "TX", party: "R", since: 2013 },
-  { name: "John Cornyn", title: "Senator", state: "TX", party: "R", since: 2002 },
-  { name: "Al Green", title: "Representative", state: "TX-9", party: "D", since: 2005 },
-  { name: "Chuck Schumer", title: "Senator", state: "NY", party: "D", since: 1999 },
-  { name: "Alexandria Ocasio-Cortez", title: "Representative", state: "NY-14", party: "D", since: 2019 },
+  { name: "Ted Cruz", key: "Sen. Cruz", title: "Senator", state: "TX", party: "R", since: 2013 },
+  { name: "John Cornyn", key: "Sen. Cornyn", title: "Senator", state: "TX", party: "R", since: 2002 },
+  { name: "Al Green", key: "Rep. Green", title: "Representative", state: "TX-9", party: "D", since: 2005 },
+  { name: "Chuck Schumer", key: "Sen. Schumer", title: "Senator", state: "NY", party: "D", since: 1999 },
+  { name: "Alexandria Ocasio-Cortez", key: "Rep. Ocasio-Cortez", title: "Representative", state: "NY-14", party: "D", since: 2019 },
 ];
 
 // ═══════════════════════════════════════
-// TABS
-// ═══════════════════════════════════════
-document.querySelectorAll('.tab').forEach(tab => {
-  tab.addEventListener('click', () => {
-    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-    tab.classList.add('active');
-    document.getElementById('panel-' + tab.dataset.tab).classList.add('active');
-  });
-});
-
-// ═══════════════════════════════════════
-// GAME ENGINE
+// GAME
 // ═══════════════════════════════════════
 const Game = {
-  current: 0,
-  answers: [],
   issues: [],
+  votes: {},    // index -> true/false
+  state: 'ballot', // ballot | reveal | reps
 
   init() {
-    // Pick 5 random issues for today's game
-    this.issues = [...ISSUES].sort(() => Math.random() - 0.5).slice(0, 5);
-    this.current = 0;
-    this.answers = [];
-    document.getElementById('results').classList.remove('active');
-    document.getElementById('results').innerHTML = '';
-    document.getElementById('game-active').style.display = 'flex';
-    this.renderProgress();
-    this.renderCard();
+    // Seed today's issues from date
+    const today = new Date();
+    const seed = today.getFullYear() * 10000 + (today.getMonth()+1) * 100 + today.getDate();
+    const shuffled = [...ISSUES].sort((a,b) => {
+      const ha = this.hash(a.question + seed) ;
+      const hb = this.hash(b.question + seed);
+      return ha - hb;
+    });
+    this.issues = shuffled.slice(0, 5);
+    this.votes = {};
+    this.state = 'ballot';
+
+    // Set date
+    const dateStr = today.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' });
+    document.getElementById('ballot-date').textContent = dateStr.toUpperCase();
+
+    // Load streak
+    const streak = localStorage.getItem('pm-streak') || '1';
+    document.getElementById('streak-num').textContent = streak;
+
+    this.renderBallot();
+    this.showScreen('ballot');
+    document.getElementById('cast-bar').classList.remove('screen-hidden');
+    document.getElementById('actions-bar').classList.add('screen-hidden');
   },
 
-  renderProgress() {
-    const bar = document.getElementById('progress');
-    bar.innerHTML = '';
-    for (let i = 0; i < this.issues.length; i++) {
-      const pip = document.createElement('div');
-      pip.className = 'progress-pip';
-      if (i < this.current) {
-        pip.classList.add(this.answers[i] ? 'agree' : 'disagree');
-      } else if (i === this.current) {
-        pip.classList.add('current');
-      }
-      bar.appendChild(pip);
+  hash(str) {
+    let h = 0;
+    for (let i = 0; i < str.length; i++) {
+      h = ((h << 5) - h + str.charCodeAt(i)) | 0;
+    }
+    return h;
+  },
+
+  showScreen(name) {
+    ['ballot','reveal','reps'].forEach(s => {
+      document.getElementById('screen-' + s).classList.toggle('screen-hidden', s !== name);
+    });
+    this.state = name;
+    document.getElementById('nav-toggle').textContent = name === 'reps' ? 'Back' : 'Your Reps';
+
+    if (name === 'ballot') {
+      document.getElementById('cast-bar').classList.remove('screen-hidden');
+      document.getElementById('actions-bar').classList.add('screen-hidden');
+    } else if (name === 'reveal') {
+      document.getElementById('cast-bar').classList.add('screen-hidden');
+      document.getElementById('actions-bar').classList.remove('screen-hidden');
+    } else {
+      document.getElementById('cast-bar').classList.add('screen-hidden');
+      document.getElementById('actions-bar').classList.add('screen-hidden');
     }
   },
 
-  renderCard() {
-    const stack = document.getElementById('card-stack');
-    stack.innerHTML = '';
-
-    if (this.current >= this.issues.length) {
-      this.showResults();
-      return;
-    }
-
-    const issue = this.issues[this.current];
-
-    // Next card preview (if exists)
-    if (this.current + 1 < this.issues.length) {
-      const next = document.createElement('div');
-      next.className = 'swipe-card';
-      next.style.transform = 'scale(0.95) translateY(8px)';
-      next.style.opacity = '0.4';
-      next.style.zIndex = '0';
-      stack.appendChild(next);
-    }
-
-    // Current card
-    const card = document.createElement('div');
-    card.className = 'swipe-card';
-    card.style.zIndex = '1';
-    card.innerHTML = `
-      <div class="issue-category">${issue.category}</div>
-      <div class="issue-question">${issue.question}</div>
-      <div class="issue-context">${issue.context}</div>
-      <div class="swipe-hint agree-hint">AGREE</div>
-      <div class="swipe-hint disagree-hint">DISAGREE</div>
-    `;
-
-    // Touch/mouse drag
-    let startX = 0, currentX = 0, isDragging = false;
-
-    const onStart = (x) => { startX = x; isDragging = true; card.classList.add('dragging'); };
-    const onMove = (x) => {
-      if (!isDragging) return;
-      currentX = x - startX;
-      const rotation = currentX * 0.08;
-      card.style.transform = `translateX(${currentX}px) rotate(${rotation}deg)`;
-      
-      const agreeHint = card.querySelector('.agree-hint');
-      const disagreeHint = card.querySelector('.disagree-hint');
-      agreeHint.style.opacity = Math.min(currentX / 80, 1);
-      disagreeHint.style.opacity = Math.min(-currentX / 80, 1);
-    };
-    const onEnd = () => {
-      if (!isDragging) return;
-      isDragging = false;
-      card.classList.remove('dragging');
-      if (Math.abs(currentX) > 100) {
-        const agree = currentX > 0;
-        card.style.transition = 'transform 0.3s ease';
-        card.style.transform = `translateX(${agree ? 400 : -400}px) rotate(${agree ? 30 : -30}deg)`;
-        card.style.opacity = '0';
-        setTimeout(() => Game.answer(agree), 250);
-      } else {
-        card.style.transition = 'transform 0.3s ease';
-        card.style.transform = '';
-        card.querySelector('.agree-hint').style.opacity = '0';
-        card.querySelector('.disagree-hint').style.opacity = '0';
-      }
-      currentX = 0;
-    };
-
-    card.addEventListener('mousedown', e => onStart(e.clientX));
-    card.addEventListener('mousemove', e => onMove(e.clientX));
-    card.addEventListener('mouseup', onEnd);
-    card.addEventListener('mouseleave', onEnd);
-    card.addEventListener('touchstart', e => onStart(e.touches[0].clientX), { passive: true });
-    card.addEventListener('touchmove', e => onMove(e.touches[0].clientX), { passive: true });
-    card.addEventListener('touchend', onEnd);
-
-    stack.appendChild(card);
-  },
-
-  answer(agree) {
-    this.answers.push(agree);
-    this.current++;
-    this.renderProgress();
-    this.renderCard();
-  },
-
-  showResults() {
-    document.getElementById('game-active').style.display = 'none';
-    const results = document.getElementById('results');
-    results.classList.add('active');
-
-    const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    
-    let html = `
-      <div class="results-header">Your Match</div>
-      <div class="results-date">${today}</div>
-    `;
-
-    // Calculate match % per rep
-    const repNames = [...new Set(this.issues.flatMap(i => Object.keys(i.votes)))];
-    const repResults = repNames.map(rep => {
-      let matches = 0;
-      const cells = [];
-      this.issues.forEach((issue, idx) => {
-        const repVote = issue.votes[rep];
-        const userVote = this.answers[idx];
-        const match = repVote === userVote;
-        if (match) matches++;
-        cells.push(match);
-      });
-      const pct = Math.round((matches / this.issues.length) * 100);
-      return { name: rep, pct, cells };
-    }).sort((a, b) => b.pct - a.pct);
-
-    repResults.forEach(rep => {
-      const pctClass = rep.pct >= 70 ? 'high' : rep.pct >= 40 ? 'mid' : 'low';
-      const repData = REPS.find(r => rep.name.includes(r.name.split(' ').pop()));
-      const partyClass = repData ? 'party-' + repData.party.toLowerCase() : '';
-      
-      html += `
-        <div class="rep-result">
-          <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
-            <div>
-              <div class="rep-name">${rep.name}</div>
-              <div class="rep-info">${repData ? repData.title + ' · ' + repData.state : ''}</div>
-            </div>
-            <div>
-              <span class="match-pct ${pctClass}">${rep.pct}%</span>
-              <span class="match-label">match</span>
-            </div>
+  renderBallot() {
+    const el = document.getElementById('ballot');
+    el.innerHTML = this.issues.map((issue, i) => `
+      <div class="ballot-issue" id="issue-${i}" data-index="${i}">
+        <div class="issue-row">
+          <div class="issue-body" onclick="Game.toggleContext(${i})">
+            <div class="issue-cat">${issue.category}</div>
+            <div class="issue-text">${issue.question}</div>
           </div>
-          <div class="match-grid">
-            ${rep.cells.map((match, i) => `
-              <div class="match-cell ${match ? 'agree' : 'disagree'}" style="animation-delay:${i * 0.1}s">
-                ${match ? '✓' : '✕'}
-              </div>
-            `).join('')}
+          <div class="issue-buttons">
+            <button class="issue-btn yes-btn" onclick="Game.vote(${i}, true)" aria-label="Yes">
+              <span class="issue-btn-label">Yes</span>
+              <span></span>
+            </button>
+            <button class="issue-btn no-btn" onclick="Game.vote(${i}, false)" aria-label="No">
+              <span class="issue-btn-label">No</span>
+              <span></span>
+            </button>
           </div>
         </div>
-      `;
-    });
+        <div class="context-tip">${issue.context}</div>
+      </div>
+    `).join('');
+  },
 
-    // Share button
-    const shareGrid = repResults.map(r => 
-      r.name.split('.').pop().trim().split(' ').pop() + ': ' + r.cells.map(m => m ? '🟩' : '🟥').join('')
-    ).join('\n');
+  toggleContext(i) {
+    document.getElementById('issue-' + i).classList.toggle('expanded');
+  },
 
-    html += `
-      <button class="share-btn" onclick="Game.share()">Share Results</button>
-      <button class="play-again" onclick="Game.init()">Play Again</button>
+  vote(index, yes) {
+    // If tapping the same vote, toggle it off
+    if (this.votes[index] === yes) {
+      delete this.votes[index];
+    } else {
+      this.votes[index] = yes;
+    }
+
+    // Update UI
+    const el = document.getElementById('issue-' + index);
+    el.classList.remove('voted-yes', 'voted-no');
+    if (this.votes[index] === true) el.classList.add('voted-yes');
+    else if (this.votes[index] === false) el.classList.add('voted-no');
+
+    this.updateCastButton();
+  },
+
+  updateCastButton() {
+    const count = Object.keys(this.votes).length;
+    const total = this.issues.length;
+    const btn = document.getElementById('cast-btn');
+
+    if (count === total) {
+      btn.disabled = false;
+      btn.classList.add('visible');
+      btn.innerHTML = 'Cast Your Ballot';
+    } else {
+      btn.classList.add('visible');
+      btn.disabled = true;
+      btn.innerHTML = `${count} of ${total} <span class="cast-count">answered</span>`;
+    }
+  },
+
+  cast() {
+    if (Object.keys(this.votes).length < this.issues.length) return;
+
+    // Save streak
+    const today = new Date().toDateString();
+    const lastPlay = localStorage.getItem('pm-last-play');
+    let streak = parseInt(localStorage.getItem('pm-streak') || '0');
+    const yesterday = new Date(Date.now() - 86400000).toDateString();
+
+    if (lastPlay === yesterday) streak++;
+    else if (lastPlay !== today) streak = 1;
+
+    localStorage.setItem('pm-streak', streak);
+    localStorage.setItem('pm-last-play', today);
+    document.getElementById('streak-num').textContent = streak;
+
+    this.showReveal();
+  },
+
+  showReveal() {
+    this.showScreen('reveal');
+    const reveal = document.getElementById('reveal');
+
+    // Calculate results
+    const results = REPS.map(rep => {
+      let matches = 0;
+      const cells = this.issues.map((issue, i) => {
+        const repVote = issue.votes[rep.key];
+        const userVote = this.votes[i];
+        const match = repVote === userVote;
+        if (match) matches++;
+        return { match, category: issue.category };
+      });
+      const pct = Math.round((matches / this.issues.length) * 100);
+      return { ...rep, pct, cells };
+    }).sort((a, b) => b.pct - a.pct);
+
+    this._results = results;
+
+    const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+
+    reveal.innerHTML = `
+      <div class="reveal-header">
+        <div class="reveal-label">${today} Results</div>
+        <div class="reveal-title">Your Match</div>
+      </div>
+      ${results.map((rep, ri) => {
+        const pctClass = rep.pct >= 70 ? 'high' : rep.pct >= 40 ? 'mid' : 'low';
+        return `
+          <div class="rep-reveal" id="rep-reveal-${ri}">
+            <div class="rep-top">
+              <div>
+                <div class="rep-name">${rep.name}</div>
+                <div class="rep-detail">${rep.title} · ${rep.state}</div>
+              </div>
+              <div style="text-align:right">
+                <div class="rep-pct ${pctClass}" id="rep-pct-${ri}" style="opacity:0">
+                  ${rep.pct}%
+                </div>
+                <div class="rep-pct-label" id="rep-pct-label-${ri}" style="opacity:0">match</div>
+              </div>
+            </div>
+            <div class="rep-grid" id="rep-grid-${ri}">
+              ${rep.cells.map((c, ci) => `
+                <div class="rep-cell ${c.match ? 'match' : 'miss'}" id="cell-${ri}-${ci}">
+                  <div class="cell-icon"></div>
+                </div>
+              `).join('')}
+            </div>
+            <div class="rep-grid-labels">
+              ${rep.cells.map(c => `<div class="rep-cell-cat">${c.category.slice(0,4)}</div>`).join('')}
+            </div>
+          </div>
+        `;
+      }).join('')}
     `;
 
-    results.innerHTML = html;
-    this._shareText = `Primary Match ${today}\n\n${shareGrid}\n\nprimarydaily.com`;
+    // Cascade reveal animations
+    results.forEach((rep, ri) => {
+      // Show card
+      setTimeout(() => {
+        document.getElementById('rep-reveal-' + ri).classList.add('visible');
+      }, ri * 250 + 100);
+
+      // Reveal cells one by one
+      rep.cells.forEach((c, ci) => {
+        setTimeout(() => {
+          const cell = document.getElementById(`cell-${ri}-${ci}`);
+          if (cell) cell.classList.add('revealed');
+        }, ri * 250 + 400 + ci * 150);
+      });
+
+      // Show percentage after cells
+      setTimeout(() => {
+        const pctEl = document.getElementById('rep-pct-' + ri);
+        const labelEl = document.getElementById('rep-pct-label-' + ri);
+        if (pctEl) { pctEl.style.opacity = '1'; pctEl.classList.add('pop-in'); }
+        if (labelEl) { labelEl.style.opacity = '1'; }
+      }, ri * 250 + 400 + rep.cells.length * 150 + 200);
+    });
   },
 
   share() {
+    if (!this._results) return;
+    const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    const grid = this._results.map(r => {
+      const squares = r.cells.map(c => c.match ? '\u2B1B' : '\u2B1C').join('');
+      return `${squares} ${r.pct}%`;
+    }).join('\n');
+
+    const text = `Primary Match \u00B7 ${today}\n\n${grid}\n\nprimarydaily.com/match`;
+
     if (navigator.share) {
-      navigator.share({ text: this._shareText });
+      navigator.share({ text });
     } else {
-      navigator.clipboard.writeText(this._shareText).then(() => {
+      navigator.clipboard.writeText(text).then(() => {
         const toast = document.createElement('div');
         toast.className = 'toast';
         toast.textContent = 'Copied to clipboard';
         document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2000);
+        setTimeout(() => toast.remove(), 2200);
       });
     }
+  },
+
+  reset() {
+    this.init();
+    window.scrollTo(0, 0);
   }
 };
 
 // ═══════════════════════════════════════
-// REPS TAB
+// REPS BROWSER
 // ═══════════════════════════════════════
 function renderReps(filter = '') {
   const list = document.getElementById('reps-list');
-  const filtered = REPS.filter(r => {
-    const q = filter.toLowerCase();
-    return !q || r.name.toLowerCase().includes(q) || r.state.toLowerCase().includes(q);
-  });
+  const q = filter.toLowerCase();
+  const filtered = REPS.filter(r => !q || r.name.toLowerCase().includes(q) || r.state.toLowerCase().includes(q));
 
   list.innerHTML = filtered.map(r => {
     const partyClass = 'party-' + r.party.toLowerCase();
     const partyLabel = r.party === 'R' ? 'GOP' : r.party === 'D' ? 'DEM' : 'IND';
-    
-    // Get their votes on our issues
-    const repKey = Object.keys(ISSUES[0].votes).find(k => k.includes(r.name.split(' ').pop()));
-    const voteChips = ISSUES.slice(0, 5).map(issue => {
-      const vote = issue.votes[repKey];
-      return `<span class="vote-chip ${vote ? 'yea' : 'nay'}">${issue.category}: ${vote ? 'YEA' : 'NAY'}</span>`;
+
+    const pips = ISSUES.slice(0, 7).map(issue => {
+      const vote = issue.votes[r.key];
+      return `<div class="rep-card-pip ${vote ? 'yea' : 'nay'}"></div>`;
     }).join('');
 
     return `
       <div class="rep-card">
-        <div class="rep-card-header">
+        <div class="rep-card-top">
           <div>
             <div class="rep-card-name">${r.name}</div>
-            <div class="rep-card-detail">${r.title} · ${r.state} · Since ${r.since}</div>
+            <div class="rep-card-info">${r.title} · ${r.state} · Since ${r.since}</div>
           </div>
           <span class="rep-card-party ${partyClass}">${partyLabel}</span>
         </div>
-        <div class="rep-card-votes">${voteChips}</div>
+        <div class="rep-card-votes">${pips}</div>
       </div>
     `;
   }).join('');
 }
 
+// ═══════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════
+document.getElementById('nav-toggle').addEventListener('click', () => {
+  if (Game.state === 'reps') {
+    Game.showScreen(Game._prevScreen || 'ballot');
+  } else {
+    Game._prevScreen = Game.state;
+    Game.showScreen('reps');
+    renderReps();
+  }
+});
+
 document.getElementById('reps-search').addEventListener('input', e => renderReps(e.target.value));
+document.getElementById('cast-btn').addEventListener('click', () => Game.cast());
 
 // ═══════════════════════════════════════
 // INIT
