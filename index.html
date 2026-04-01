@@ -1069,15 +1069,22 @@ html, body {
 <!-- ═══════════ PARTY PICKER ═══════════ -->
 <div id="party-picker" class="screen">
   <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:32px;padding-bottom:calc(32px + var(--safe-bottom))">
-    <div style="font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;margin-bottom:8px;text-align:center">One quick question</div>
-    <div style="color:var(--muted);font-size:15px;text-align:center;margin-bottom:40px;max-width:280px;line-height:1.5">Who did you vote for in the last presidential election?</div>
+    <div style="font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;margin-bottom:8px;text-align:center">Before we start</div>
+    <div style="color:var(--muted);font-size:15px;text-align:center;margin-bottom:32px;max-width:280px;line-height:1.5">Two quick things so we can find your reps and track your independence.</div>
+    
+    <div style="width:100%;max-width:300px;margin-bottom:24px">
+      <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px">Your zip code</div>
+      <input id="zipInput" type="text" inputmode="numeric" maxlength="5" placeholder="10001" style="width:100%;padding:16px;background:var(--card);border:1.5px solid var(--surface);border-radius:14px;font-family:inherit;font-size:18px;font-weight:600;color:var(--text);text-align:center;outline:none;box-shadow:0 1px 4px rgba(0,0,0,0.04);letter-spacing:4px" />
+    </div>
+    
+    <div style="font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:10px">Who did you vote for last election?</div>
     <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px">
       <button onclick="pickParty('D')" style="padding:16px;background:var(--card);border:1.5px solid var(--surface);border-radius:14px;font-family:inherit;font-size:16px;font-weight:600;color:var(--text);cursor:pointer;transition:all 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.04)">Biden / Harris</button>
       <button onclick="pickParty('R')" style="padding:16px;background:var(--card);border:1.5px solid var(--surface);border-radius:14px;font-family:inherit;font-size:16px;font-weight:600;color:var(--text);cursor:pointer;transition:all 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.04)">Trump / Vance</button>
       <button onclick="pickParty('O')" style="padding:16px;background:var(--card);border:1.5px solid var(--surface);border-radius:14px;font-family:inherit;font-size:16px;font-weight:600;color:var(--text);cursor:pointer;transition:all 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.04)">Other / Third Party</button>
       <button onclick="pickParty('N')" style="padding:16px;background:none;border:none;font-family:inherit;font-size:14px;color:var(--muted);cursor:pointer;margin-top:4px">I didn't vote</button>
     </div>
-    <div style="color:var(--muted);font-size:12px;text-align:center;margin-top:24px;max-width:260px;line-height:1.5;opacity:0.6">This is never shared. It's used to show how often your views break from the party line.</div>
+    <div style="color:var(--muted);font-size:12px;text-align:center;margin-top:24px;max-width:260px;line-height:1.5;opacity:0.6">Never shared. Used to find your reps and show your independence score.</div>
   </div>
 </div>
 
@@ -1152,11 +1159,8 @@ html, body {
     <span class="nav-label">Reps</span>
   </div>
   <div class="nav-item" data-tab="fingerprint" onclick="switchTab('fingerprint')">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-      <path d="M12 10a2 2 0 00-2 2c0 1.02-.1 2.51-.26 4"/>
-      <path d="M8.65 14.57a8.4 8.4 0 01-.15-1.57 3.5 3.5 0 117 0c0 1.22-.1 2.8-.28 4.37"/>
-      <path d="M6.09 15.34A10 10 0 016 14a6 6 0 1112 0c0 1.36-.07 3.06-.17 4.68"/>
-      <path d="M3.97 16.66A12 12 0 013.5 14a8.5 8.5 0 1117 0c0 .72-.02 1.64-.07 2.67"/>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="12" cy="10" r="3"/><path d="M12 13v4"/><path d="M8 21v-1a4 4 0 018 0v1"/><path d="M5 12l2-2"/><path d="M19 12l-2-2"/>
     </svg>
     <span class="nav-label">You</span>
   </div>
@@ -1429,7 +1433,8 @@ const PARTY_LINE = {
 };
 
 function pickParty(party) {
-  setStore({ votedFor: party });
+  const zip = (document.getElementById('zipInput')?.value || '').trim();
+  setStore({ votedFor: party, zipCode: zip || null });
   showScreen('splash');
   init();
 }
@@ -1483,6 +1488,14 @@ function resetDaily() {
   const store = getStore();
   delete store.lastPlayed;
   delete store.answers;
+  localStorage.setItem('primary_match', JSON.stringify(store));
+  location.reload();
+}
+
+function resetProfile() {
+  const store = getStore();
+  delete store.votedFor;
+  delete store.zipCode;
   localStorage.setItem('primary_match', JSON.stringify(store));
   location.reload();
 }
@@ -1754,7 +1767,14 @@ function showRepProfile(repId) {
 let repsFilter = 'all';
 
 function buildRepsTab() {
-  const filtered = repsFilter === 'all' ? REPS : 
+  // "Your Reps" — mock: show reps from your state based on zip (NY for 10xxx, TX for 7xxxx, etc.)
+  const store = getStore();
+  const zip = store.zipCode || '';
+  const yourState = zip.startsWith('10') || zip.startsWith('11') ? 'NY' : 
+                    zip.startsWith('7') ? 'TX' : zip.startsWith('04') ? 'ME' : zip.startsWith('15') || zip.startsWith('16') || zip.startsWith('17') || zip.startsWith('18') || zip.startsWith('19') ? 'PA' : null;
+  
+  const filtered = repsFilter === 'yours' ? REPS.filter(r => yourState && r.state === yourState) :
+    repsFilter === 'all' ? REPS : 
     repsFilter === 'senate' ? REPS.filter(r => r.chamber === 'Senate') :
     REPS.filter(r => r.chamber === 'House');
   
@@ -1772,6 +1792,7 @@ function buildRepsTab() {
       <div class="reps-subtitle">Your compatibility after 15 days of play</div>
     </div>
     <div class="reps-filters">
+      <button class="filter-pill ${repsFilter === 'yours' ? 'active' : ''}" onclick="setRepsFilter('yours')">Your Reps</button>
       <button class="filter-pill ${repsFilter === 'all' ? 'active' : ''}" onclick="setRepsFilter('all')">All</button>
       <button class="filter-pill ${repsFilter === 'senate' ? 'active' : ''}" onclick="setRepsFilter('senate')">Senate</button>
       <button class="filter-pill ${repsFilter === 'house' ? 'active' : ''}" onclick="setRepsFilter('house')">House</button>
@@ -2257,6 +2278,11 @@ function buildFingerprintTab() {
         <div class="fp-share-tagline">15 days · ${Object.values(stats).reduce((a, s) => a + s.total, 0)} stances</div>
       </div>
       <button class="share-btn" onclick="copyFingerprint()">Share Your Fingerprint</button>
+    </div>
+    
+    <div style="margin-top:32px;padding-top:24px;border-top:1px solid var(--surface);text-align:center">
+      <button onclick="resetProfile()" style="background:none;border:1px solid var(--surface);color:var(--muted);padding:12px 24px;border-radius:10px;font-family:inherit;font-size:13px;font-weight:500;cursor:pointer">Change vote / zip code</button>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px;opacity:0.5">This will reset your profile settings</div>
     </div>
   `;
   
