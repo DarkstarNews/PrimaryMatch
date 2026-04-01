@@ -1279,15 +1279,17 @@ const REPS = [
 ];
 
 // ─── MOCK HISTORICAL DATA (15 days of play) ───
-const CATEGORIES = ['Tech', 'Healthcare', 'Immigration', 'Economy', 'Rights', 'Environment'];
-const CAT_SHORT = { Tech: 'TECH', Healthcare: 'HEALTH', Immigration: 'IMMIG', Economy: 'ECON', Rights: 'RIGHTS', Environment: 'ENVIRO' };
+const CATEGORIES = ['Tech', 'Healthcare', 'Immigration', 'Economy', 'Rights', 'Environment', 'Foreign Policy', 'Defense'];
+const CAT_SHORT = { Tech: 'TECH', Healthcare: 'HEALTH', Immigration: 'IMMIG', Economy: 'ECON', Rights: 'RIGHTS', Environment: 'ENVIRO', 'Foreign Policy': 'FOREIGN', Defense: 'DEFENSE' };
 const CATEGORY_COLORS = {
   'Tech': '#7B61C7',
   'Healthcare': '#D4654A',
   'Immigration': '#D4A03C',
   'Economy': '#4A90D9',
   'Rights': '#5BA58B',
-  'Environment': '#8B6F47'
+  'Environment': '#8B6F47',
+  'Foreign Policy': '#C75B8E',
+  'Defense': '#6B8EAE'
 };
 
 // Each day: array of {category, userVote (true/false/null), repVotes: {repId: bool}}
@@ -1300,17 +1302,19 @@ const MOCK_HISTORY = (function() {
     'Immigration': ['Border wall', 'DACA pathway', 'Visa reform', 'Asylum process', 'E-Verify mandate'],
     'Economy': ['Student debt', 'Min wage hike', 'Tax reform', 'Housing subsidy', 'Trade tariffs'],
     'Rights': ['Assault weapons', 'Voting rights', 'Privacy amendment', 'Police reform', 'Marriage equality'],
-    'Environment': ['Carbon tax', 'EV mandate', 'Pipeline approval', 'Clean energy subsidy', 'Drilling ban']
+    'Environment': ['Carbon tax', 'EV mandate', 'Pipeline approval', 'Clean energy subsidy', 'Drilling ban'],
+    'Foreign Policy': ['Ukraine aid', 'China tariffs', 'Iran deal', 'NATO funding', 'Israel aid'],
+    'Defense': ['Pentagon budget', 'Troop withdrawal', 'Drone program', 'VA funding', 'Space Force']
   };
-  // User's simulated positions (leans progressive on healthcare/rights/environment, moderate on economy/tech, conservative-ish on immigration)
-  const userLeanings = { 'Tech': 0.5, 'Healthcare': 0.8, 'Immigration': 0.3, 'Economy': 0.6, 'Rights': 0.85, 'Environment': 0.7 };
+  // User's simulated positions (leans progressive on healthcare/rights/environment, moderate on economy/tech, conservative-ish on immigration, mixed on foreign/defense)
+  const userLeanings = { 'Tech': 0.5, 'Healthcare': 0.8, 'Immigration': 0.3, 'Economy': 0.6, 'Rights': 0.85, 'Environment': 0.7, 'Foreign Policy': 0.45, 'Defense': 0.35 };
   
   for (let d = 0; d < 15; d++) {
     const dayIssues = [];
     const usedCats = [];
     for (let i = 0; i < 5; i++) {
       let cat;
-      do { cat = CATEGORIES[Math.floor(Math.random() * 6)]; } while (usedCats.includes(cat) && usedCats.length < 6);
+      do { cat = CATEGORIES[Math.floor(Math.random() * CATEGORIES.length)]; } while (usedCats.includes(cat) && usedCats.length < CATEGORIES.length);
       usedCats.push(cat);
       const lean = userLeanings[cat] + (Math.random() - 0.5) * 0.3;
       const userVote = Math.random() < 0.05 ? null : Math.random() < lean;
@@ -2068,28 +2072,30 @@ function openRepExpanded(repId) {
 
 // ─── ARCHETYPE SYSTEM (21 archetypes from iOS app) ───
 function computeArchetype(axes) {
-  // Map our 6 categories to dimension scores (-1 to 1 scale, where positive = conservative/right lean)
+  // Map our 8 categories to dimension scores (-1 to 1 scale, where positive = conservative/right lean)
   // axes[i].value is 0-1 where 1 = always agreed (progressive lean), 0 = always disagreed
   const dimMap = {};
   axes.forEach(a => { dimMap[a.cat] = (a.value - 0.5) * -2; }); // flip: negative = progressive
   
-  const eco = dimMap['Economy'] || 0;      // positive = free market, negative = govt intervention
-  const soc = dimMap['Rights'] || 0;       // positive = traditional, negative = progressive
-  const env = dimMap['Environment'] || 0;  // positive = deregulate, negative = green
-  const hc  = dimMap['Healthcare'] || 0;   // positive = free market, negative = universal
-  const imm = dimMap['Immigration'] || 0;  // positive = restrictive, negative = open
-  const tech = dimMap['Tech'] || 0;        // positive = deregulate, negative = regulate
+  const eco = dimMap['Economy'] || 0;            // positive = free market, negative = govt intervention
+  const soc = dimMap['Rights'] || 0;             // positive = traditional, negative = progressive
+  const env = dimMap['Environment'] || 0;        // positive = deregulate, negative = green
+  const hc  = dimMap['Healthcare'] || 0;         // positive = free market, negative = universal
+  const imm = dimMap['Immigration'] || 0;        // positive = restrictive, negative = open
+  const tech = dimMap['Tech'] || 0;              // positive = deregulate, negative = regulate
+  const fp  = dimMap['Foreign Policy'] || 0;     // positive = interventionist, negative = non-interventionist
+  const def = dimMap['Defense'] || 0;            // positive = hawkish/strong military, negative = dovish/reduce
 
   // Cross-dimensional archetypes (most specific first)
-  if (eco > 0.3 && soc < -0.2) return { name: 'The Libertarian', desc: "You believe freedom isn't a partisan idea — it's the whole point. Less government everywhere, applied consistently." };
+  if (eco > 0.3 && soc < -0.2 && def < 0) return { name: 'The Libertarian', desc: "You believe freedom isn't a partisan idea — it's the whole point. Less government everywhere, applied consistently." };
   if (eco > 0.2 && soc < -0.3) return { name: 'The Civil Libertarian', desc: "You're comfortable with free markets, but individual rights are where you draw the line." };
   if (eco > 0.2 && soc < -0.2 && env < -0.2) return { name: 'The Pragmatic Progressive', desc: "You want meaningful reform and you want it to actually work. Big vision, grounded execution." };
   if (eco < -0.3 && soc > 0.2) return { name: 'The Populist', desc: "You see a system that serves insiders and you want it rebalanced. The frustration isn't abstract — it's personal." };
-  if (eco < -0.2 && imm > 0.3) return { name: 'The Anti-Establishment', desc: "You distrust concentrated power regardless of which party holds it." };
-  if (imm > 0.4 && eco > 0.2) return { name: 'The Defense Hawk', desc: "You think a strong stance isn't just about defense — it's what makes everything else possible." };
-  if (imm > 0.3 && soc < -0.2) return { name: 'The Liberal Hawk', desc: "Progressive values at home, credible strength abroad." };
-  if (imm < -0.3 && eco < -0.2) return { name: 'The Progressive Dove', desc: "You'd rather invest in communities than conflicts. Real security starts at home." };
-  if (imm < -0.3 && eco > 0.2) return { name: 'The America First', desc: "You think the country's first obligation is to its own people. Domestic priorities first." };
+  if (eco < -0.2 && fp < -0.2 && def < -0.2) return { name: 'The Anti-Establishment', desc: "You distrust concentrated power regardless of which party holds it." };
+  if (def > 0.3 && fp > 0.2) return { name: 'The Defense Hawk', desc: "You think a strong military isn't just about defense — it's what makes diplomacy possible." };
+  if (fp > 0.3 && soc < -0.2) return { name: 'The Liberal Hawk', desc: "Progressive values at home, credible strength abroad." };
+  if (fp < -0.3 && def < -0.2) return { name: 'The Progressive Dove', desc: "You'd rather invest in communities than conflicts. Real security starts at home." };
+  if (fp < -0.3 && eco > 0.2 && imm > 0.2) return { name: 'The America First', desc: "You think the country's first obligation is to its own people. Domestic priorities first." };
   if (soc > 0.3 && eco < -0.2) return { name: 'The Compassionate Conservative', desc: "You hold traditional values and believe they include taking care of people." };
   if (env < -0.4 && eco < -0.2) return { name: 'The Green New Dealer', desc: "You see climate as the defining challenge and think the response should match the scale." };
   if (env < -0.3 && eco > 0.1) return { name: 'The Market Environmentalist', desc: "You care about the planet and think innovation will get us further than regulation." };
