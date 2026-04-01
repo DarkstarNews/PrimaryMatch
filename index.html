@@ -1055,6 +1055,21 @@ html, body {
   </div>
 </div>
 
+<!-- ═══════════ PARTY PICKER ═══════════ -->
+<div id="party-picker" class="screen">
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:32px;padding-bottom:calc(32px + var(--safe-bottom))">
+    <div style="font-family:'Source Serif 4',Georgia,serif;font-size:24px;font-weight:700;margin-bottom:8px;text-align:center">One quick question</div>
+    <div style="color:var(--muted);font-size:15px;text-align:center;margin-bottom:40px;max-width:280px;line-height:1.5">Who did you vote for in the last presidential election?</div>
+    <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:300px">
+      <button onclick="pickParty('D')" style="padding:16px;background:var(--card);border:1.5px solid var(--surface);border-radius:14px;font-family:inherit;font-size:16px;font-weight:600;color:var(--text);cursor:pointer;transition:all 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.04)">Biden / Harris</button>
+      <button onclick="pickParty('R')" style="padding:16px;background:var(--card);border:1.5px solid var(--surface);border-radius:14px;font-family:inherit;font-size:16px;font-weight:600;color:var(--text);cursor:pointer;transition:all 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.04)">Trump / Vance</button>
+      <button onclick="pickParty('O')" style="padding:16px;background:var(--card);border:1.5px solid var(--surface);border-radius:14px;font-family:inherit;font-size:16px;font-weight:600;color:var(--text);cursor:pointer;transition:all 0.15s;box-shadow:0 1px 4px rgba(0,0,0,0.04)">Other / Third Party</button>
+      <button onclick="pickParty('N')" style="padding:16px;background:none;border:none;font-family:inherit;font-size:14px;color:var(--muted);cursor:pointer;margin-top:4px">I didn't vote</button>
+    </div>
+    <div style="color:var(--muted);font-size:12px;text-align:center;margin-top:24px;max-width:260px;line-height:1.5;opacity:0.6">This is never shared. It's used to show how often your views break from the party line.</div>
+  </div>
+</div>
+
 <!-- ═══════════ GAME ═══════════ -->
 <div id="game" class="screen overlay">
   <div class="game-header">
@@ -1338,8 +1353,41 @@ function switchTab(tab) {
 }
 
 // ─── INIT ───
+// ─── PARTY LINE DEFINITIONS (how each party's reps typically vote) ───
+const PARTY_LINE = {
+  D: { 'tiktok-ban': false, 'insulin-cap': true, 'border-wall': false, 'student-debt': true, 'assault-weapons': true },
+  R: { 'tiktok-ban': true, 'insulin-cap': false, 'border-wall': true, 'student-debt': false, 'assault-weapons': false }
+};
+
+function pickParty(party) {
+  setStore({ votedFor: party });
+  showScreen('splash');
+  init();
+}
+
+function getIndependenceScore() {
+  const store = getStore();
+  if (!store.votedFor || store.votedFor === 'O' || store.votedFor === 'N') return null;
+  if (!store.answers) return null;
+  const partyLine = PARTY_LINE[store.votedFor];
+  let breaks = 0, total = 0;
+  TODAY.issues.forEach((issue, i) => {
+    if (store.answers[i] === null || store.answers[i] === undefined) return;
+    total++;
+    if (store.answers[i] !== partyLine[issue.id]) breaks++;
+  });
+  return total > 0 ? Math.round((breaks / total) * 100) : 0;
+}
+
 function init() {
   const store = getStore();
+  
+  // First time: show party picker
+  if (!store.votedFor) {
+    showScreen('party-picker');
+    return;
+  }
+  
   if (store.lastPlayed === TODAY.date && store.answers) {
     showSplashPlayed(store);
     return;
@@ -1509,6 +1557,10 @@ function buildResults(matches) {
   const top = matches[0];
   const surprise = (top.party === 'R' && answers.filter(a => a === true).length > 2) ||
                    (top.party === 'D' && answers.filter(a => a === false).length > 2);
+  const indep = getIndependenceScore();
+  const store = getStore();
+  const partyLabel = store.votedFor === 'D' ? 'Democratic' : store.votedFor === 'R' ? 'Republican' : null;
+  
   let html = `
     <div class="match-reveal">
       <div class="match-label">Your top match</div>
@@ -1517,6 +1569,12 @@ function buildResults(matches) {
       <div class="match-meta">${top.title}</div>
       ${surprise ? '<div class="surprise-tag">Surprise Match</div>' : ''}
     </div>
+    ${indep !== null ? `
+    <div style="background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:24px;box-shadow:var(--card-shadow);text-align:center">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px">Independence Score</div>
+      <div style="font-family:'Source Serif 4',Georgia,serif;font-size:40px;font-weight:700;color:${indep >= 40 ? 'var(--surprise)' : 'var(--muted)'}">${indep}%</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:6px;line-height:1.4">You broke from the ${partyLabel} party line on ${indep}% of today's issues</div>
+    </div>` : ''}
     <div class="match-list">
       <div class="match-list-title">All Matches</div>
       ${matches.map(m => `
@@ -1577,7 +1635,11 @@ function copyShare() {
     if (u === r) return u ? '\u{1F7E6}' : '\u{1F7E7}';
     return '\u2B1B';
   }).join('');
-  navigator.clipboard.writeText(`Primary ${TODAY.date}\n${blocks}\n${top.score}% match\nprimarydaily.com/match`).then(() => showToast('Copied to clipboard')).catch(() => showToast('Copied!'));
+  const indep = getIndependenceScore();
+  const indepLine = indep !== null ? `\n${indep}% independent` : '';
+  const store = getStore();
+  const streakLine = store.streak > 1 ? ` · ${store.streak} day streak` : '';
+  navigator.clipboard.writeText(`Primary ${TODAY.date}\n${blocks}\n${top.score}% match${indepLine}${streakLine}\nprimarydaily.com/match`).then(() => showToast('Copied to clipboard')).catch(() => showToast('Copied!'));
 }
 
 // ─── REP PROFILE (from results) ───
