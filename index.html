@@ -1668,6 +1668,9 @@ function buildResults(matches) {
           <div class="match-item-score" style="color:${m.score >= 60 ? 'var(--agree)' : m.score <= 40 ? 'var(--disagree)' : 'var(--muted)'}">${m.score}%</div>
         </div>`).join('')}
     </div>
+    <div class="share-section">${buildShareGrid()}
+      <button class="share-btn" onclick="copyShare()">Copy Results</button>
+    </div>
     <div class="stance-breakdown">
       <div class="match-list-title">Your Stances vs ${top.name.split(' ')[1]}</div>
       ${TODAY.issues.map((issue, i) => {
@@ -1680,9 +1683,6 @@ function buildResults(matches) {
             <div class="stance-match-icon">${match ? '●' : '○'}</div>
           </div></div>`;
       }).join('')}
-    </div>
-    <div class="share-section">${buildShareGrid()}
-      <button class="share-btn" onclick="copyShare()">Copy Results</button>
     </div>
     <div class="deepdive-section">
       <div class="match-list-title" style="margin-bottom:12px">Go deeper</div>
