@@ -1357,8 +1357,17 @@ function showSplashPlayed(store) {
     <div class="played-today">
       <p>You've matched today.<br>Come back tomorrow for 5 new issues.</p><br>
       <button class="start-btn" onclick="showResults()" style="background: var(--surface); color: var(--text);">See Today's Results</button>
+      <button class="start-btn" onclick="resetDaily()" style="background: none; color: var(--muted); font-size: 13px; margin-top: 12px; border: 1px solid var(--surface);">Play Again</button>
     </div>`;
   answers = store.answers;
+}
+
+function resetDaily() {
+  const store = getStore();
+  delete store.lastPlayed;
+  delete store.answers;
+  localStorage.setItem('primary_match', JSON.stringify(store));
+  location.reload();
 }
 
 function startGame() {
