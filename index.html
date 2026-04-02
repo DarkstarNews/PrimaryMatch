@@ -705,6 +705,7 @@ html, body {
 #reps-tab {
   overflow-y: auto; -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
+  flex: 1;
 }
 .reps-inner {
   padding: 16px;
@@ -7354,18 +7355,56 @@ function finishGame() {
   }, 200);
 }
 
+// Calculate how much each issue differentiates within parties
+function calcIssueWeights() {
+  const weights = {};
+  TODAY_ISSUES.forEach(issue => {
+    // Calculate variance within each party
+    const dVotes = ALL_REPS.filter(r => r.party === 'D' && r.votes[issue.id] !== null).map(r => r.votes[issue.id] ? 1 : 0);
+    const rVotes = ALL_REPS.filter(r => r.party === 'R' && r.votes[issue.id] !== null).map(r => r.votes[issue.id] ? 1 : 0);
+
+    // Calculate split within each party (how close to 50/50)
+    const dPct = dVotes.length > 0 ? dVotes.reduce((a, b) => a + b, 0) / dVotes.length : 0.5;
+    const rPct = rVotes.length > 0 ? rVotes.reduce((a, b) => a + b, 0) / rVotes.length : 0.5;
+
+    // Weight based on how much it differentiates (distance from 0 or 1)
+    // Issues where party votes 95-5 have low differentiating power (close to 0 or 1)
+    // Issues where party votes 60-40 have high differentiating power (close to 0.5)
+    const dDiff = 1 - Math.abs(dPct - 0.5) * 2; // 0 = no split, 1 = perfect 50/50 split
+    const rDiff = 1 - Math.abs(rPct - 0.5) * 2;
+
+    // Average both parties' differentiation scores, add baseline weight
+    // This gives weight from 0.5 (unanimous) to 1.5 (highly divisive within party)
+    weights[issue.id] = 0.5 + (dDiff + rDiff) / 2;
+  });
+  return weights;
+}
+
 function calcMatches() {
+  const weights = calcIssueWeights();
+
   return ALL_REPS.map(rep => {
-    let agree = 0, total = 0;
+    let weightedAgree = 0, totalWeight = 0;
     TODAY_ISSUES.forEach((issue, i) => {
       const userAnswer = getAnswer(i);
       if (userAnswer === null || userAnswer === undefined) return;
       const repVote = rep.votes[issue.id];
       if (repVote === null || repVote === undefined) return; // Skip null votes
-      total++;
-      if (userAnswer === repVote) agree++;
+
+      const weight = weights[issue.id];
+      totalWeight += weight;
+      if (userAnswer === repVote) weightedAgree += weight;
     });
-    return { ...rep, score: total > 0 ? Math.round((agree / total) * 100) : 50, agree, total };
+
+    const score = totalWeight > 0 ? Math.round((weightedAgree / totalWeight) * 100) : 50;
+    // Keep agree/total for compatibility with other code
+    const unweightedTotal = TODAY_ISSUES.filter((issue, i) => {
+      const userAnswer = getAnswer(i);
+      const repVote = rep.votes[issue.id];
+      return userAnswer !== null && userAnswer !== undefined && repVote !== null && repVote !== undefined;
+    }).length;
+
+    return { ...rep, score, agree: Math.round(score * unweightedTotal / 100), total: unweightedTotal };
   }).sort((a, b) => b.score - a.score);
 }
 
@@ -7394,8 +7433,9 @@ function buildResults(matches) {
   
   // Find "your reps" matches
   const state = getStateFromZip(store.zipCode || '');
-  const yourReps = state ? matches.filter(m => m.state === state) : [];
-  
+  // Only show senators (2 max) since we can't determine House district from ZIP alone
+  const yourReps = state ? matches.filter(m => m.state === state && m.chamber === 'Senate') : [];
+
   // Build streak display
   const streakHtml = store.streak > 1 ? `
     <div style="background:linear-gradient(135deg, #D4A03C 0%, #C75B8E 100%);border-radius:var(--radius);padding:16px 24px;margin-bottom:24px;text-align:center;color:white;box-shadow:var(--card-shadow)">
@@ -7423,6 +7463,9 @@ function buildResults(matches) {
     html += `<div class="match-list">
       <div class="match-list-title">Your Representatives (${state})</div>
       ${yourReps.map(m => buildMatchItem(m)).join('')}
+      <div style="padding:12px 16px;background:var(--surface);border-radius:12px;margin-top:12px;font-size:13px;color:var(--muted);text-align:center">
+        Your U.S. House representative depends on your specific district. <a href="#" onclick="switchTab('reps'); return false;" style="color:var(--text);text-decoration:underline">Browse all reps</a> to find yours.
+      </div>
     </div>`;
   }
   
