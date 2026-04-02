@@ -758,9 +758,6 @@ html, body {
 
 /* ─── ANSWER ICONS ROW ─── */
 .answer-icons-row {
-  position: sticky;
-  top: 0;
-  background: var(--bg);
   padding: 16px 24px;
   display: flex;
   gap: 12px;
@@ -7355,6 +7352,42 @@ function computeHistoricalStats() {
 
 const HIST = computeHistoricalStats();
 
+function updateHistFromToday() {
+  // Reset HIST stats to zero then recompute from today's answers
+  CATEGORIES.forEach(c => { HIST.catStats[c] = { agrees: 0, disagrees: 0, skips: 0, total: 0 }; });
+  ALL_REPS.forEach(r => {
+    HIST.repScores[r.id] = { agree: 0, total: 0, byCategory: {}, trend: [] };
+    CATEGORIES.forEach(c => { HIST.repScores[r.id].byCategory[c] = { agree: 0, total: 0 }; });
+  });
+  CATEGORIES.forEach(c => { HIST.earlyStats[c] = { agrees: 0, total: 0 }; HIST.lateStats[c] = { agrees: 0, total: 0 }; });
+
+  const store = getStore();
+  const ans = store.answers || answers || [];
+  TODAY_ISSUES.forEach((issue, i) => {
+    const a = ans[i];
+    const userVote = (a !== null && a !== undefined && typeof a === 'object' && 'answer' in a) ? a.answer : a;
+    const cat = issue.category;
+    if (!HIST.catStats[cat]) return;
+    HIST.catStats[cat].total++;
+    if (userVote === true) HIST.catStats[cat].agrees++;
+    else if (userVote === false) HIST.catStats[cat].disagrees++;
+    else HIST.catStats[cat].skips++;
+
+    if (userVote !== null && userVote !== undefined) {
+      ALL_REPS.forEach(r => {
+        const repVote = r.votes[issue.id];
+        if (repVote === null || repVote === undefined) return;
+        HIST.repScores[r.id].total++;
+        HIST.repScores[r.id].byCategory[cat].total++;
+        if (userVote === repVote) {
+          HIST.repScores[r.id].agree++;
+          HIST.repScores[r.id].byCategory[cat].agree++;
+        }
+      });
+    }
+  });
+}
+
 // ═══════════════════════════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════════════════════════
@@ -7384,6 +7417,7 @@ function switchTab(tab) {
     const store = getStore();
     if (store.lastPlayed === TODAY_STR && store.answers) {
       answers = store.answers;
+      updateHistFromToday();
       const matches = calcMatches();
       _cachedMatches = matches;
       buildResults(matches);
@@ -7639,6 +7673,7 @@ function finishGame() {
   const streak = (store.lastPlayed && daysBetween(store.lastPlayed, TODAY_STR) === 1) ? (store.streak || 1) + 1 : 1;
   const isFirstGame = !store.lastPlayed;
   setStore({ lastPlayed: TODAY_STR, answers, streak, matches: matches.map(m => ({ id: m.id, score: m.score })) });
+  updateHistFromToday();
 
   // Show drumroll animation
   showDrumroll(() => {
@@ -7761,6 +7796,7 @@ function calcMatches() {
 function showResults() {
   const store = getStore();
   answers = store.answers || [];
+  updateHistFromToday();
   const matches = calcMatches();
   _cachedMatches = matches;
   buildResults(matches);
@@ -7979,22 +8015,28 @@ function buildMatchItem(m) {
 
 function buildShareGrid(matches) {
   const store = getStore();
-  const actualReps = getActualReps(matches, store);
+  const top = matches[0];
   const blocks = answers.map((ans, i) => {
     const userAnswer = getAnswer(i);
-    return `<div class="share-block ${userAnswer !== null ? 'filled' : 'skip-block'}"></div>`;
+    if (userAnswer === null || userAnswer === undefined) return `<div class="share-block skip-block" title="skipped">⬜</div>`;
+    const topRepVote = top.votes[TODAY_ISSUES[i].id];
+    const agreed = userAnswer === topRepVote;
+    return `<div class="share-block ${agreed ? 'agree-block' : 'disagree-block'}" title="${TODAY_ISSUES[i].category}">${agreed ? '🟦' : '🟥'}</div>`;
   }).join('');
 
-  const repScores = actualReps.length > 0
-    ? actualReps.map(r => `${r.agree}/${r.total}`).join(' · ')
-    : `${matches[0].score}% match`;
+  const catSummary = CATEGORIES.filter(c => {
+    return answers.some((ans, i) => {
+      const uv = getAnswer(i);
+      return uv !== null && uv !== undefined && TODAY_ISSUES[i].category === c;
+    });
+  }).map(c => `<span style="color:${CATEGORY_COLORS[c]};font-size:11px;font-weight:600">${c}</span>`).join(' · ');
 
-  // Single horizontal row of 5 blocks (Wordle-style, cryptic like Wordle)
   return `<div class="share-grid">
     <div class="share-grid-title">PrimaryMatch</div>
     <div class="share-grid-date">${TODAY_STR}</div>
-    <div class="share-rows"><div class="share-row">${blocks}</div></div>
-    <div class="share-prompt">${repScores}</div>
+    <div class="share-rows"><div class="share-row" style="font-size:20px;gap:4px">${blocks}</div></div>
+    <div class="share-prompt" style="font-size:16px;font-weight:700;margin-top:8px">${top.score}% match with ${top.name}</div>
+    <div style="margin-top:6px">${catSummary}</div>
     <div style="font-size: 11px; color: var(--muted); margin-top: 8px;">primarymatch.com</div>
   </div>`;
 }
@@ -8016,15 +8058,15 @@ function copyShare() {
   const store = getStore();
   const actualReps = getActualReps(matches, store);
 
-  // Use simple filled/empty squares for cryptic Wordle-style share
+  const top = matches[0];
   const blocks = answers.map((ans, i) => {
     const userAnswer = getAnswer(i);
-    return userAnswer !== null ? '⬛' : '⬜';
+    if (userAnswer === null || userAnswer === undefined) return '⬜';
+    const topRepVote = top.votes[TODAY_ISSUES[i].id];
+    return userAnswer === topRepVote ? '🟦' : '🟥';
   }).join('');
 
-  const repScores = actualReps.length > 0
-    ? actualReps.map(r => `${r.agree}/${r.total}`).join(' · ')
-    : `${matches[0].score}%`;
+  const repScores = `${top.score}% match`;
 
   const streakLine = store.streak > 1 ? ` · ${store.streak} day streak` : '';
   const text = `PrimaryMatch ${TODAY_STR}\n${blocks}\n${repScores}${streakLine}\nprimarymatch.com`;
@@ -8582,7 +8624,7 @@ function buildRepCard(rep, idx, hasPlayed) {
   const topHolding = rep.portfolio && rep.portfolio[0] ? rep.portfolio[0] : null;
 
   return `
-    <div class="rep-card fade-up" style="animation-delay:${idx * 0.08}s" onclick="openRepExpanded('${rep.id}')">
+    <div class="rep-card fade-up" style="animation-delay:${Math.min(idx * 0.08, 0.5)}s" onclick="openRepExpanded('${rep.id}')">
       <div class="rep-card-top">
         <div class="rep-card-avatar" style="background:${rep.color}">${rep.name.split(' ').map(n=>n[0]).join('')}</div>
         <div class="rep-card-info">
