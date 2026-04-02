@@ -366,10 +366,24 @@ html, body {
   transform: scale(0.88);
   box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
-.action-btn.disagree-btn { border-color: var(--disagree); color: var(--disagree); }
-.action-btn.disagree-btn:hover { background: rgba(212,101,74,0.05); }
-.action-btn.agree-btn { border-color: var(--agree); color: var(--agree); }
-.action-btn.agree-btn:hover { background: rgba(74,144,217,0.05); }
+.action-btn.disagree-btn {
+  border-color: var(--disagree);
+  background: var(--disagree);
+  color: white;
+}
+.action-btn.disagree-btn:hover {
+  background: var(--disagree);
+  opacity: 0.9;
+}
+.action-btn.agree-btn {
+  border-color: var(--agree);
+  background: var(--agree);
+  color: white;
+}
+.action-btn.agree-btn:hover {
+  background: var(--agree);
+  opacity: 0.9;
+}
 .action-btn svg {
   width: 28px; height: 28px;
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
@@ -394,7 +408,7 @@ html, body {
   padding: 32px 24px;
   max-width: 440px;
   margin: 0 auto;
-  padding-bottom: 32px;
+  padding-bottom: 120px;
 }
 
 .match-reveal {
@@ -848,7 +862,7 @@ html, body {
   background: var(--text);
   color: var(--bg);
   border-radius: 16px;
-  padding: 28px 24px;
+  padding: 36px 24px 28px;
   margin-bottom: 16px;
   font-family: 'DM Sans', monospace;
   box-shadow: 0 8px 24px rgba(0,0,0,0.15);
@@ -930,7 +944,7 @@ html, body {
   padding: 24px;
   max-width: 440px;
   margin: 0 auto;
-  padding-bottom: 32px;
+  padding-bottom: 120px;
 }
 .rep-back {
   font-size: 14px; color: var(--muted); cursor: pointer;
@@ -990,7 +1004,7 @@ html, body {
   padding: 16px;
   max-width: 440px;
   margin: 0 auto;
-  padding-bottom: 24px;
+  padding-bottom: 120px;
   width: 100%;
   overflow-x: hidden;
 }
@@ -1236,7 +1250,7 @@ html, body {
   padding: 24px;
   max-width: 440px;
   margin: 0 auto;
-  padding-bottom: 24px;
+  padding-bottom: 120px;
   overflow: visible;
 }
 .fp-header {
@@ -1466,7 +1480,7 @@ html, body {
   from { opacity: 0; transform: translateY(16px); }
   to { opacity: 1; transform: translateY(0); }
 }
-.fade-up { animation: fade-up 0.4s ease forwards; }
+.fade-up { animation: fade-up 0.4s ease forwards; opacity: 0; }
 .fade-up-d1 { animation-delay: 0.1s; opacity: 0; }
 .fade-up-d2 { animation-delay: 0.2s; opacity: 0; }
 .fade-up-d3 { animation-delay: 0.3s; opacity: 0; }
@@ -7502,7 +7516,7 @@ function renderCard() {
   const dotsHtml = TODAY_ISSUES.map((_, i) => {
     let cls = 'progress-dot';
     if (i < currentIndex) cls += ' done';
-    else if (i === currentIndex) cls += ' current';
+    else if (i === currentIndex) cls += ' done current';
     return `<div class="${cls}"></div>`;
   }).join('');
   document.getElementById('progressDots').innerHTML = dotsHtml;
@@ -7805,7 +7819,7 @@ function buildResults(matches) {
               <div class="rep-card-header">
                 <div class="rep-card-info">
                   <div class="rep-card-name">${rep.name}</div>
-                  <div class="rep-card-meta">${rep.party} · ${rep.state} · ${rep.chamber}</div>
+                  <div class="rep-card-meta">${rep.title}</div>
                 </div>
                 <div class="rep-card-fraction">
                   <span id="repFraction${rep.id}">${fraction}</span>
@@ -8445,11 +8459,11 @@ function renderRepsIncremental() {
 }
 
 function setupRepsScroll() {
-  const repsInner = document.getElementById('repsInner');
-  if (!repsInner) return;
+  const repsTab = document.getElementById('reps-tab');
+  if (!repsTab) return;
 
-  repsInner.addEventListener('scroll', () => {
-    const { scrollTop, scrollHeight, clientHeight } = repsInner;
+  repsTab.addEventListener('scroll', () => {
+    const { scrollTop, scrollHeight, clientHeight } = repsTab;
     if (scrollTop + clientHeight >= scrollHeight - 500) {
       renderRepsIncremental();
     }
@@ -8568,7 +8582,7 @@ function buildRepCard(rep, idx, hasPlayed) {
   const topHolding = rep.portfolio && rep.portfolio[0] ? rep.portfolio[0] : null;
 
   return `
-    <div class="rep-card fade-up" style="animation-delay:${idx * 0.08}s;opacity:0" onclick="openRepExpanded('${rep.id}')">
+    <div class="rep-card fade-up" style="animation-delay:${idx * 0.08}s" onclick="openRepExpanded('${rep.id}')">
       <div class="rep-card-top">
         <div class="rep-card-avatar" style="background:${rep.color}">${rep.name.split(' ').map(n=>n[0]).join('')}</div>
         <div class="rep-card-info">
@@ -8907,11 +8921,17 @@ function buildFingerprintTab() {
       `}
     </div>
     <div class="fp-drift"><div class="fp-section-title">Drift Tracking</div>
-      <div style="background:var(--card);border-radius:14px;padding:40px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.04);text-align:center">
-        <div style="font-size:15px;color:var(--muted);line-height:1.6">
-          ${daysPlayed === 1 ? 'Play more days to see your political shape evolve' : 'Play tomorrow to track drift'}
+      ${daysPlayed >= 2 ? `
+        <div style="background:var(--card);border-radius:14px;padding:20px;box-shadow:0 1px 4px rgba(0,0,0,0.04)">
+          <div style="position:relative;width:100%;height:280px">
+            <canvas id="fpDrift"></canvas>
+          </div>
         </div>
-      </div>
+      ` : `
+        <div style="background:var(--card);border-radius:14px;padding:40px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.04);text-align:center">
+          <div style="font-size:15px;color:var(--muted);line-height:1.6">Play 2+ days to see how your views shift over time</div>
+        </div>
+      `}
     </div>
     ${closestRep ? `<div class="fp-closest"><div class="fp-section-title">Closest overall match</div>
       <div class="fp-closest-card" onclick="openRepExpanded('${closestRep.id}')">
@@ -8937,7 +8957,7 @@ function buildFingerprintTab() {
       drawDrift(driftData);
     }
     positionAxisLabels(axes);
-  }, 100);
+  }, 200);
 }
 
 function generateInsights() {
@@ -9002,7 +9022,7 @@ function drawRadar(canvasId, axes, dark) {
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const dpr = window.devicePixelRatio || 1;
-  const size = canvas.parentElement.offsetWidth;
+  const size = canvas.parentElement.offsetWidth || 300;
   canvas.width = size * dpr; canvas.height = size * dpr;
   canvas.style.width = size + 'px'; canvas.style.height = size + 'px';
   ctx.scale(dpr, dpr);
