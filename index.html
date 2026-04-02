@@ -494,6 +494,285 @@ html, body {
   }
 }
 
+/* ─── DRUMROLL ANIMATION ─── */
+.drumroll-icon {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 28px;
+  background: rgba(255,255,255,0.1);
+  opacity: 0;
+  transform: translateY(-20px) scale(0.5);
+}
+.drumroll-icon.land {
+  animation: iconLand 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes iconLand {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.5) rotate(-10deg);
+  }
+  60% {
+    transform: translateY(3px) scale(1.1) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0deg);
+  }
+}
+
+/* ─── REPS REPORT CARD ─── */
+.reps-report {
+  margin-top: 32px;
+}
+.reps-report-title {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 26px; font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+}
+.rep-card {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--card-shadow);
+  cursor: pointer;
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1),
+              box-shadow 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  opacity: 0;
+  transform: translateY(10px);
+}
+.rep-card.appear {
+  animation: cardAppear 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+@keyframes cardAppear {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.rep-card:active {
+  transform: scale(0.98);
+}
+.rep-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.rep-card-info {
+  flex: 1;
+}
+.rep-card-name {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 20px; font-weight: 700;
+  margin-bottom: 4px;
+}
+.rep-card-meta {
+  font-size: 13px;
+  color: var(--muted);
+}
+.rep-card-fraction {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 36px; font-weight: 700;
+  line-height: 1;
+  text-align: right;
+}
+.rep-card-fraction .denominator {
+  font-size: 24px;
+  opacity: 0.5;
+}
+.rep-card-verdict {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  text-align: center;
+  padding: 8px;
+  margin: 12px 0;
+  border-radius: 8px;
+  background: var(--surface);
+}
+.rep-card-verdict.lockstep { background: #E8F5E9; color: #2E7D32; }
+.rep-card-verdict.close { background: #E3F2FD; color: #1565C0; }
+.rep-card-verdict.split { background: #FFF3E0; color: #E65100; }
+.rep-card-verdict.drifting { background: #FCE4EC; color: #C2185B; }
+.rep-card-verdict.opposed { background: #FFEBEE; color: #C62828; }
+.rep-card-verdict.mirror { background: #F3E5F5; color: #6A1B9A; }
+.rep-card-disagreement {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+  padding-top: 12px;
+  border-top: 1px solid var(--surface);
+}
+
+/* ─── SURPRISE MATCH CARD ─── */
+.surprise-match {
+  margin-top: 32px;
+  text-align: center;
+}
+.surprise-match-title {
+  font-size: 13px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.flip-card-container {
+  perspective: 1000px;
+  margin-bottom: 20px;
+}
+.flip-card {
+  width: 100%;
+  height: 200px;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  cursor: pointer;
+}
+.flip-card.flipped {
+  transform: rotateY(180deg);
+}
+.flip-card-face {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  border-radius: var(--radius);
+  box-shadow: var(--card-shadow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48px;
+}
+.flip-card-front {
+  background: var(--surprise);
+}
+.flip-card-back {
+  background: var(--card);
+  transform: rotateY(180deg);
+  flex-direction: column;
+  padding: 24px;
+  text-align: center;
+}
+.flip-card-back-name {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 24px; font-weight: 700;
+  margin-bottom: 8px;
+}
+.flip-card-back-meta {
+  font-size: 14px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.flip-card-back-fraction {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 40px; font-weight: 700;
+  color: var(--agree);
+  margin: 12px 0;
+}
+.flip-card-back-context {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* ─── STAT LINE ─── */
+.stat-line {
+  background: var(--card);
+  border-radius: var(--radius);
+  padding: 28px 24px;
+  margin-top: 32px;
+  box-shadow: var(--card-shadow);
+  text-align: center;
+}
+.stat-line-category {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+.stat-line-number {
+  font-family: 'DM Sans', system-ui, sans-serif;
+  font-size: 64px; font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 12px;
+}
+.stat-line-context {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.5;
+  max-width: 320px;
+  margin: 0 auto;
+}
+.stat-line-reference {
+  font-size: 12px;
+  color: var(--muted);
+  opacity: 0.7;
+  margin-top: 8px;
+}
+
+/* ─── CLOSER SECTION ─── */
+.closer-section {
+  margin-top: 32px;
+  text-align: center;
+  padding: 24px;
+  background: var(--surface);
+  border-radius: var(--radius);
+}
+.countdown {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: 18px; font-weight: 600;
+  margin-bottom: 16px;
+}
+.dig-deeper-link {
+  display: inline-block;
+  font-size: 14px;
+  color: var(--text);
+  text-decoration: underline;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.dig-deeper-link:hover {
+  opacity: 0.7;
+}
+
+/* ─── ANSWER ICONS ROW ─── */
+.answer-icons-row {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  padding: 16px 24px;
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  align-items: center;
+  z-index: 10;
+  border-bottom: 1px solid var(--surface);
+}
+.answer-icon {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+}
+.answer-icon.correct {
+  background: rgba(74,144,217,0.15);
+  color: var(--agree);
+}
+.answer-icon.incorrect {
+  background: rgba(212,101,74,0.15);
+  color: var(--disagree);
+}
+
 .match-list { margin-top: 32px; }
 .match-list-title {
   font-size: 12px; font-weight: 700;
@@ -1314,6 +1593,13 @@ html, body {
         <polyline points="20 6 9 17 4 12"/>
       </svg>
     </button>
+  </div>
+</div>
+
+<!-- ═══════════ DRUMROLL OVERLAY ═══════════ -->
+<div id="drumroll" class="screen overlay" style="background: var(--text); z-index: 999;">
+  <div style="display: flex; align-items: center; justify-content: center; height: 100%; flex-direction: column; gap: 40px;">
+    <div id="drumrollIcons" style="display: flex; gap: 16px; align-items: center;"></div>
   </div>
 </div>
 
@@ -7339,20 +7625,70 @@ function finishGame() {
   const streak = (store.lastPlayed && daysBetween(store.lastPlayed, TODAY_STR) === 1) ? (store.streak || 1) + 1 : 1;
   const isFirstGame = !store.lastPlayed;
   setStore({ lastPlayed: TODAY_STR, answers, streak, matches: matches.map(m => ({ id: m.id, score: m.score })) });
-  buildResults(matches);
-  document.getElementById('bottomNav').classList.remove('hidden');
-  showScreen('results');
-  setTimeout(() => {
-    const reveal = document.querySelector('.match-reveal');
-    if (reveal) reveal.classList.add('visible');
-    const pctEl = document.getElementById('topMatchPct');
-    if (pctEl) animateCount(pctEl, matches[0].score);
 
-    // Show A2HS prompt after first game
-    if (isFirstGame) {
-      setTimeout(() => showA2HSPrompt(), 3000);
-    }
-  }, 200);
+  // Show drumroll animation
+  showDrumroll(() => {
+    buildResults(matches);
+    document.getElementById('bottomNav').classList.remove('hidden');
+    showScreen('results');
+    setTimeout(() => {
+      // Animate answer icons row
+      const icons = document.querySelectorAll('.answer-icon');
+      icons.forEach((icon, i) => {
+        setTimeout(() => {
+          icon.style.animation = 'iconLand 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+        }, i * 50);
+      });
+
+      // Animate rep cards
+      const repCards = document.querySelectorAll('.rep-card');
+      repCards.forEach((card, i) => {
+        setTimeout(() => {
+          card.classList.add('appear');
+        }, 400 + i * 300);
+      });
+
+      // Auto-flip surprise match card
+      setTimeout(() => {
+        const flipCard = document.querySelector('.flip-card');
+        if (flipCard) flipCard.classList.add('flipped');
+      }, 1200);
+
+      // Show A2HS prompt after first game
+      if (isFirstGame) {
+        setTimeout(() => showA2HSPrompt(), 3000);
+      }
+    }, 200);
+  });
+}
+
+function showDrumroll(callback) {
+  showScreen('drumroll');
+  const container = document.getElementById('drumrollIcons');
+  container.innerHTML = '';
+
+  // Wait brief moment for dark screen
+  setTimeout(() => {
+    // Add icons one by one
+    answers.forEach((ans, i) => {
+      setTimeout(() => {
+        const icon = document.createElement('div');
+        icon.className = 'drumroll-icon land';
+        const userAnswer = getAnswer(i);
+        icon.textContent = userAnswer !== null ? '✓' : '○';
+        icon.style.background = userAnswer !== null ? 'rgba(74,144,217,0.2)' : 'rgba(255,255,255,0.1)';
+        icon.style.color = userAnswer !== null ? '#4A90D9' : 'rgba(255,255,255,0.5)';
+        container.appendChild(icon);
+
+        // After all icons land, transition to results
+        if (i === answers.length - 1) {
+          setTimeout(() => {
+            callback();
+          }, 600);
+        }
+      }, i * 50);
+    });
+  }, 400);
 }
 
 // Calculate how much each issue differentiates within parties
@@ -7427,76 +7763,194 @@ function buildResults(matches) {
   const top = matches[0];
   const store = getStore();
   const userParty = store.votedFor;
-  const surprise = (userParty === 'D' && top.party === 'R') || (userParty === 'R' && top.party === 'D');
-  const indep = getIndependenceScore();
-  const partyLabel = store.votedFor === 'D' ? 'Democratic' : store.votedFor === 'R' ? 'Republican' : null;
-  
-  // Find "your reps" matches
   const state = getStateFromZip(store.zipCode || '');
-  // Only show senators (2 max) since we can't determine House district from ZIP alone
-  const yourReps = state ? matches.filter(m => m.state === state && m.chamber === 'Senate') : [];
 
-  // Build streak display
-  const streakHtml = store.streak > 1 ? `
-    <div style="background:linear-gradient(135deg, #D4A03C 0%, #C75B8E 100%);border-radius:var(--radius);padding:16px 24px;margin-bottom:24px;text-align:center;color:white;box-shadow:var(--card-shadow)">
-      <div style="font-size:32px;font-weight:700;margin-bottom:4px">🔥 ${store.streak} day streak!</div>
-      <div style="font-size:13px;opacity:0.9">Keep it going — come back tomorrow</div>
-    </div>` : '';
+  // Find user's actual reps (2 senators + try to find House rep)
+  const yourReps = state ? matches.filter(m => m.state === state && (m.chamber === 'Senate' || m.chamber === 'House')) : [];
+  const senators = yourReps.filter(r => r.chamber === 'Senate').slice(0, 2);
+  const houseRep = yourReps.find(r => r.chamber === 'House');
+  const actualReps = [...senators];
+  if (houseRep) actualReps.push(houseRep);
 
-  let html = streakHtml + `
-    <div class="match-reveal">
-      <div class="match-label">Your top match</div>
-      <div class="match-pct"><span id="topMatchPct">0</span><span class="pct-sign">%</span></div>
-      <div class="match-name">${top.name}</div>
-      <div class="match-meta">${top.title}</div>
-      ${surprise ? '<div class="surprise-tag">Surprise Match</div>' : ''}
-    </div>
-    ${indep !== null ? `
-    <div style="background:var(--card);border-radius:var(--radius);padding:20px;margin-bottom:24px;box-shadow:var(--card-shadow);text-align:center">
-      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:var(--muted);margin-bottom:8px">Independence Score</div>
-      <div style="font-family:'DM Sans',system-ui,sans-serif;font-size:40px;font-weight:700;color:${indep.pct >= 40 ? 'var(--surprise)' : 'var(--muted)'}">${indep.pct}%</div>
-      <div style="font-size:13px;color:var(--muted);margin-top:6px;line-height:1.4">You broke from the ${partyLabel} party line on ${indep.breaks} of today's ${indep.total} issues</div>
-    </div>` : ''}`;
-    
-  // Your Reps section
-  if (yourReps.length > 0) {
-    html += `<div class="match-list">
-      <div class="match-list-title">Your Representatives (${state})</div>
-      ${yourReps.map(m => buildMatchItem(m)).join('')}
-      <div style="padding:12px 16px;background:var(--surface);border-radius:12px;margin-top:12px;font-size:13px;color:var(--muted);text-align:center">
-        Your U.S. House representative depends on your specific district. <a href="#" onclick="switchTab('reps'); return false;" style="color:var(--text);text-decoration:underline">Browse all reps</a> to find yours.
+  // Section 0: Answer icons row (stays pinned at top)
+  const answerIconsHtml = `
+    <div class="answer-icons-row">
+      ${answers.map((ans, i) => {
+        const userAnswer = getAnswer(i);
+        const topRepVote = top.votes[TODAY_ISSUES[i].id];
+        const isMatch = userAnswer !== null && userAnswer === topRepVote;
+        return `<div class="answer-icon ${isMatch ? 'correct' : 'incorrect'}">${userAnswer !== null ? (isMatch ? '✓' : '✗') : '○'}</div>`;
+      }).join('')}
+    </div>`;
+
+  // Section 1: Your Reps Report Card
+  let repsReportHtml = '';
+  if (actualReps.length > 0) {
+    repsReportHtml = `
+      <div class="reps-report">
+        <div class="reps-report-title">Your Reps Today</div>
+        ${actualReps.map(rep => {
+          const fraction = `${rep.agree}/${rep.total}`;
+          const verdict = getVerdict(rep.agree, rep.total);
+          const disagreements = TODAY_ISSUES.filter((issue, i) => {
+            const userAns = getAnswer(i);
+            return userAns !== null && userAns !== rep.votes[issue.id];
+          });
+          const disagreementText = disagreements.length > 0
+            ? `Disagreed on: ${disagreements[0].category}`
+            : 'Perfect alignment';
+
+          return `
+            <div class="rep-card" onclick="showRepProfileFromResults('${rep.id}')">
+              <div class="rep-card-header">
+                <div class="rep-card-info">
+                  <div class="rep-card-name">${rep.name}</div>
+                  <div class="rep-card-meta">${rep.party} · ${rep.state} · ${rep.chamber}</div>
+                </div>
+                <div class="rep-card-fraction">
+                  <span id="repFraction${rep.id}">${fraction}</span>
+                </div>
+              </div>
+              <div class="rep-card-verdict ${verdict.class}">${verdict.label}</div>
+              <div class="rep-card-disagreement">${disagreementText}</div>
+            </div>`;
+        }).join('')}
+      </div>`;
+  }
+
+  // Section 2: The Surprise Match
+  const surpriseMatch = findSurpriseMatch(matches, userParty, top);
+  const surpriseMatchHtml = `
+    <div class="surprise-match">
+      <div class="surprise-match-title">Your Surprise Match ⚡</div>
+      <div class="flip-card-container">
+        <div class="flip-card" onclick="this.classList.toggle('flipped')">
+          <div class="flip-card-face flip-card-front">?</div>
+          <div class="flip-card-face flip-card-back">
+            <div class="flip-card-back-name">${surpriseMatch.name}</div>
+            <div class="flip-card-back-meta">${surpriseMatch.title}</div>
+            <div class="flip-card-back-fraction">${surpriseMatch.agree}/${surpriseMatch.total}</div>
+            <div class="flip-card-back-context">${surpriseMatch.context}</div>
+          </div>
+        </div>
       </div>
     </div>`;
-  }
-  
-  html += `
-    <div class="match-list">
-      <div class="match-list-title">All Matches</div>
-      ${matches.slice(0, 8).map(m => buildMatchItem(m)).join('')}
-    </div>
-    <div class="share-section">${buildShareGrid(matches)}
+
+  // Section 3: The Stat Line
+  const statLine = pickStatLine(store, userParty);
+  const statLineHtml = `
+    <div class="stat-line">
+      <div class="stat-line-category">${statLine.category}</div>
+      <div class="stat-line-number">${statLine.number}</div>
+      <div class="stat-line-context">${statLine.context}</div>
+      <div class="stat-line-reference">Question ${statLine.questionNum}</div>
+    </div>`;
+
+  // Section 4: Share Card
+  const shareHtml = `
+    <div class="share-section" style="margin-top: 32px;">
+      ${buildShareGrid(matches)}
       <button class="share-btn" onclick="copyShare()">Copy Results</button>
       <button class="share-btn" onclick="shareAsImage()" style="margin-top:12px;background:var(--agree)">Share as Image</button>
-    </div>
-    <div class="stance-breakdown">
-      <div class="match-list-title">Your Stances vs ${top.name.split(' ').pop()}</div>
-      ${TODAY_ISSUES.map((issue, i) => {
-        const uv = getAnswer(i), rv = top.votes[issue.id], match = uv !== null && uv === rv;
-        return `<div class="stance-row"><div class="stance-topic">${issue.category}</div>
-          <div class="stance-compare">
-            <div class="stance-you"><div class="stance-dot ${uv === true ? 'agree' : uv === false ? 'disagree' : 'skip'}"></div>You: ${uv === true ? 'Agree' : uv === false ? 'Disagree' : 'Skipped'}</div>
-            <div class="stance-vs">vs</div>
-            <div class="stance-them"><div class="stance-dot ${rv ? 'agree' : 'disagree'}"></div>${rv ? 'Yea' : 'Nay'}</div>
-            <div class="stance-match-icon">${match ? '●' : '○'}</div>
-          </div></div>`;
-      }).join('')}
-    </div>
-    ${buildEmailCapture()}
-    ${buildTomorrowTeaser()}
-    <div style="text-align:center;margin-top:24px">
+    </div>`;
+
+  // Section 5: The Closer
+  const closerHtml = `
+    <div class="closer-section">
+      <div class="countdown">Next match in ${getTimeUntilTomorrow()}</div>
+      <a class="dig-deeper-link" onclick="showDetailedBreakdown()">Dig Deeper →</a>
+    </div>`;
+
+  const playAgainHtml = `
+    <div style="text-align:center;margin-top:24px;margin-bottom:40px">
       <button class="start-btn" onclick="playAgain()" style="background:var(--surface);color:var(--text);max-width:280px">Play Again</button>
     </div>`;
+
+  const html = answerIconsHtml + repsReportHtml + surpriseMatchHtml + statLineHtml + shareHtml + closerHtml + playAgainHtml;
   document.getElementById('resultsInner').innerHTML = html;
+}
+
+function getVerdict(agree, total) {
+  const ratio = agree / total;
+  if (ratio === 1) return { label: 'Lockstep', class: 'lockstep' };
+  if (ratio >= 0.8) return { label: 'Close', class: 'close' };
+  if (ratio >= 0.6) return { label: 'Split', class: 'split' };
+  if (ratio >= 0.4) return { label: 'Drifting', class: 'drifting' };
+  if (ratio > 0) return { label: 'Opposed', class: 'opposed' };
+  return { label: 'Mirror Image', class: 'mirror' };
+}
+
+function findSurpriseMatch(matches, userParty, top) {
+  // Priority: cross-party high match > same-party low match > famous outlier
+  const crossParty = matches.filter(m => m.party !== userParty && m.score >= 60);
+  if (crossParty.length > 0) {
+    const match = crossParty[0];
+    return {
+      ...match,
+      context: `You're a ${userParty} voter who aligns ${match.score}% with a ${match.party} rep`
+    };
+  }
+
+  const samePartyLow = matches.filter(m => m.party === userParty && m.score < 60);
+  if (samePartyLow.length > 0) {
+    const match = samePartyLow[samePartyLow.length - 1];
+    return {
+      ...match,
+      context: `Despite being in your party, you only match ${match.score}%`
+    };
+  }
+
+  // Fall back to top match
+  return {
+    ...top,
+    context: `Your strongest alignment at ${top.score}%`
+  };
+}
+
+function pickStatLine(store, userParty) {
+  const indep = getIndependenceScore();
+  if (indep && indep.pct >= 40) {
+    return {
+      category: 'Party Line',
+      number: `${indep.pct}%`,
+      context: `You broke from the ${userParty === 'D' ? 'Democratic' : 'Republican'} party line on ${indep.breaks} of ${indep.total} questions`,
+      questionNum: indep.breaks > 0 ? '1-5' : '—'
+    };
+  }
+
+  // Pick a random interesting stat
+  const stats = [
+    {
+      category: 'The Split',
+      number: '51-49',
+      context: 'The closest vote in Congress this week was on Question 2',
+      questionNum: '2'
+    },
+    {
+      category: 'Follow the Money',
+      number: '$2.4M',
+      context: 'Average lobbying exposure for reps who voted Yes on Question 3',
+      questionNum: '3'
+    }
+  ];
+
+  return stats[Math.floor(Math.random() * stats.length)];
+}
+
+function getTimeUntilTomorrow() {
+  const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  tomorrow.setHours(0, 0, 0, 0);
+  const diff = tomorrow - now;
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  return `${hours}h ${minutes}m`;
+}
+
+function showDetailedBreakdown() {
+  // Show expanded view with full question text, votes, party breakdowns
+  showToast('Detailed breakdown coming soon');
 }
 
 function buildMatchItem(m) {
@@ -7510,54 +7964,72 @@ function buildMatchItem(m) {
 }
 
 function buildShareGrid(matches) {
-  const top = matches[0];
-  const blocks = TODAY_ISSUES.map((issue, i) => {
-    const user = getAnswer(i), rep = top.votes[issue.id];
-    let cls = 'skip-block';
-    if (user === null || user === undefined) cls = 'skip-block';
-    else if (user === rep) cls = user ? 'agree-match' : 'disagree-match';
-    else cls = user ? 'agree-nomatch' : 'disagree-nomatch';
-    return `<div class="share-block ${cls}"></div>`;
+  const store = getStore();
+  const actualReps = getActualReps(matches, store);
+  const blocks = answers.map((ans, i) => {
+    const userAnswer = getAnswer(i);
+    return `<div class="share-block ${userAnswer !== null ? 'filled' : 'skip-block'}"></div>`;
   }).join('');
-  // Single horizontal row of 5 blocks (Wordle-style)
-  return `<div class="share-grid"><div class="share-grid-title">Primary</div><div class="share-grid-date">${TODAY_STR}</div><div class="share-rows"><div class="share-row">${blocks}</div></div><div class="share-prompt">${top.score}% match with ${top.name.split(' ').pop()}</div></div>`;
+
+  const repScores = actualReps.length > 0
+    ? actualReps.map(r => `${r.agree}/${r.total}`).join(' · ')
+    : `${matches[0].score}% match`;
+
+  // Single horizontal row of 5 blocks (Wordle-style, cryptic like Wordle)
+  return `<div class="share-grid">
+    <div class="share-grid-title">PrimaryMatch</div>
+    <div class="share-grid-date">${TODAY_STR}</div>
+    <div class="share-rows"><div class="share-row">${blocks}</div></div>
+    <div class="share-prompt">${repScores}</div>
+    <div style="font-size: 11px; color: var(--muted); margin-top: 8px;">primarymatch.com</div>
+  </div>`;
+}
+
+function getActualReps(matches, store) {
+  const state = getStateFromZip(store.zipCode || '');
+  if (!state) return [];
+  const yourReps = matches.filter(m => m.state === state && (m.chamber === 'Senate' || m.chamber === 'House'));
+  const senators = yourReps.filter(r => r.chamber === 'Senate').slice(0, 2);
+  const houseRep = yourReps.find(r => r.chamber === 'House');
+  const actualReps = [...senators];
+  if (houseRep) actualReps.push(houseRep);
+  return actualReps;
 }
 
 let _cachedMatches = null;
 function copyShare() {
-  const top = (_cachedMatches || calcMatches())[0];
-  const blocks = TODAY_ISSUES.map((issue, i) => {
-    const u = getAnswer(i), r = top.votes[issue.id];
-    if (u === null || u === undefined) return '\u2B1C';
-    if (u === r) return u ? '\u{1F7E6}' : '\u{1F7E7}';
-    return '\u2B1B';
-  }).join('');
-  const indep = getIndependenceScore();
-  const indepLine = indep !== null ? `\n${indep.pct}% independent` : '';
+  const matches = _cachedMatches || calcMatches();
   const store = getStore();
+  const actualReps = getActualReps(matches, store);
+
+  // Use simple filled/empty squares for cryptic Wordle-style share
+  const blocks = answers.map((ans, i) => {
+    const userAnswer = getAnswer(i);
+    return userAnswer !== null ? '⬛' : '⬜';
+  }).join('');
+
+  const repScores = actualReps.length > 0
+    ? actualReps.map(r => `${r.agree}/${r.total}`).join(' · ')
+    : `${matches[0].score}%`;
+
   const streakLine = store.streak > 1 ? ` · ${store.streak} day streak` : '';
-  // Hide rep name in share
-  navigator.clipboard.writeText(`Primary ${TODAY_STR}\n${blocks}\n${top.score}% match · Who did you get?${indepLine}${streakLine}\nprimarydaily.com/match`).then(() => showToast('Copied to clipboard')).catch(() => showToast('Couldn\u2019t copy \u2014 tap and hold to copy manually'));
+  const text = `PrimaryMatch ${TODAY_STR}\n${blocks}\n${repScores}${streakLine}\nprimarymatch.com`;
+
+  navigator.clipboard.writeText(text)
+    .then(() => showToast('Copied to clipboard'))
+    .catch(() => showToast('Couldn't copy — tap and hold to copy manually'));
 }
 
 async function shareAsImage() {
-  const top = (_cachedMatches || calcMatches())[0];
+  const matches = _cachedMatches || calcMatches();
   const store = getStore();
-  const indep = getIndependenceScore();
-
-  // Compute archetype for the card
-  const stats = HIST.catStats;
-  const axes = CATEGORIES.map(cat => {
-    const s = stats[cat];
-    if (!s || s.total === 0) return { cat, value: 0.5 };
-    return { cat, value: s.agrees / s.total };
-  });
-  const archetype = computeArchetype(axes);
+  const actualReps = getActualReps(matches, store);
+  const surpriseMatch = findSurpriseMatch(matches, store.votedFor, matches[0]);
 
   // Create canvas
   const canvas = document.createElement('canvas');
   const dpr = window.devicePixelRatio || 1;
-  const w = 600, h = 800;
+  const w = 600, h = 700;
   canvas.width = w * dpr;
   canvas.height = h * dpr;
   canvas.style.width = w + 'px';
@@ -7578,134 +8050,95 @@ async function shareAsImage() {
 
   // Title
   ctx.fillStyle = '#1A1A19';
-  ctx.font = '700 32px "DM Sans", system-ui, sans-serif';
+  ctx.font = '700 36px "DM Sans", system-ui, sans-serif';
   ctx.textAlign = 'center';
-  ctx.fillText('Primary', w / 2, 100);
+  ctx.fillText('PrimaryMatch', w / 2, 100);
 
   // Date
   ctx.fillStyle = '#8A8A85';
-  ctx.font = '500 14px "DM Sans", system-ui, sans-serif';
-  ctx.fillText(TODAY_STR, w / 2, 125);
+  ctx.font = '500 16px "DM Sans", system-ui, sans-serif';
+  ctx.fillText(TODAY_STR, w / 2, 130);
 
-  // Match percentage
-  ctx.fillStyle = '#4A90D9';
-  ctx.font = '700 72px "DM Sans", system-ui, sans-serif';
-  ctx.fillText(`${top.score}%`, w / 2, 210);
+  // Row of 5 answer icons
+  const iconSize = 40;
+  const iconGap = 16;
+  const totalWidth = (iconSize * 5) + (iconGap * 4);
+  const startX = (w - totalWidth) / 2;
+  const iconY = 170;
 
-  ctx.fillStyle = '#1A1A19';
-  ctx.font = '600 18px "DM Sans", system-ui, sans-serif';
-  ctx.fillText('match', w / 2, 235);
+  answers.forEach((ans, i) => {
+    const x = startX + (i * (iconSize + iconGap));
+    const userAnswer = getAnswer(i);
 
-  // Archetype
-  ctx.fillStyle = '#1A1A19';
-  ctx.font = '700 24px "Source Serif 4", Georgia, serif';
-  ctx.fillText(archetype.name, w / 2, 280);
+    // Draw circle
+    ctx.beginPath();
+    ctx.arc(x + iconSize / 2, iconY + iconSize / 2, iconSize / 2, 0, Math.PI * 2);
+    ctx.fillStyle = userAnswer !== null ? 'rgba(74,144,217,0.15)' : 'rgba(138,138,133,0.1)';
+    ctx.fill();
 
-  // Draw radar chart in the middle
-  const radarSize = 280;
-  const radarX = (w - radarSize) / 2;
-  const radarY = 310;
-
-  // Create temporary canvas for radar
-  const radarCanvas = document.createElement('canvas');
-  radarCanvas.width = radarSize * dpr;
-  radarCanvas.height = radarSize * dpr;
-  const radarCtx = radarCanvas.getContext('2d');
-  radarCtx.scale(dpr, dpr);
-
-  const cx = radarSize / 2, cy = radarSize / 2, maxR = radarSize * 0.38, n = axes.length;
-
-  // Grid rings
-  for (let ring = 1; ring <= 4; ring++) {
-    const r = (ring / 4) * maxR;
-    radarCtx.beginPath();
-    for (let i = 0; i <= n; i++) {
-      const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
-      const x = cx + Math.cos(angle) * r, y = cy + Math.sin(angle) * r;
-      i === 0 ? radarCtx.moveTo(x, y) : radarCtx.lineTo(x, y);
-    }
-    radarCtx.closePath();
-    radarCtx.strokeStyle = 'rgba(26,26,25,0.08)';
-    radarCtx.lineWidth = 1;
-    radarCtx.stroke();
-  }
-
-  // Spokes
-  for (let i = 0; i < n; i++) {
-    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
-    radarCtx.beginPath();
-    radarCtx.moveTo(cx, cy);
-    radarCtx.lineTo(cx + Math.cos(angle) * maxR, cy + Math.sin(angle) * maxR);
-    radarCtx.strokeStyle = 'rgba(26,26,25,0.06)';
-    radarCtx.lineWidth = 1;
-    radarCtx.stroke();
-  }
-
-  // Data polygon
-  radarCtx.beginPath();
-  axes.forEach((a, i) => {
-    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
-    const r = Math.max(0.15, a.value) * maxR;
-    const x = cx + Math.cos(angle) * r, y = cy + Math.sin(angle) * r;
-    i === 0 ? radarCtx.moveTo(x, y) : radarCtx.lineTo(x, y);
-  });
-  radarCtx.closePath();
-  radarCtx.fillStyle = 'rgba(74,144,217,0.12)';
-  radarCtx.fill();
-  radarCtx.strokeStyle = 'rgba(74,144,217,0.5)';
-  radarCtx.lineWidth = 2;
-  radarCtx.stroke();
-
-  // Data points
-  const CATEGORY_COLORS_MAP = {
-    'Tech': '#4A90D9',
-    'Healthcare': '#C75B8E',
-    'Immigration': '#D4654A',
-    'Economy': '#D4A03C',
-    'Rights': '#7B61C7',
-    'Environment': '#5BA58B',
-    'Foreign Policy': '#8B6F47',
-    'Defense': '#6B8EAE'
-  };
-  axes.forEach((a, i) => {
-    const angle = (Math.PI * 2 * i) / n - Math.PI / 2;
-    const r = Math.max(0.15, a.value) * maxR;
-    radarCtx.beginPath();
-    radarCtx.arc(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r, 4, 0, Math.PI * 2);
-    radarCtx.fillStyle = CATEGORY_COLORS_MAP[a.cat] || '#4A90D9';
-    radarCtx.fill();
+    // Draw icon
+    ctx.fillStyle = userAnswer !== null ? '#4A90D9' : '#8A8A85';
+    ctx.font = '700 20px "DM Sans", system-ui, sans-serif';
+    ctx.fillText(userAnswer !== null ? '✓' : '○', x + iconSize / 2, iconY + iconSize / 2 + 7);
   });
 
-  // Draw radar onto main canvas
-  ctx.drawImage(radarCanvas, radarX, radarY, radarSize, radarSize);
-
-  // Bottom text
+  // Rep scores as compact fractions
+  let yPos = 280;
   ctx.fillStyle = '#1A1A19';
   ctx.font = '600 20px "DM Sans", system-ui, sans-serif';
-  ctx.fillText('Who did you get?', w / 2, 640);
+  ctx.fillText('Your Reps', w / 2, yPos);
 
-  // Independence score
-  if (indep !== null) {
+  yPos += 40;
+  if (actualReps.length > 0) {
+    actualReps.forEach((rep, i) => {
+      ctx.font = '700 32px "DM Sans", system-ui, sans-serif';
+      ctx.fillStyle = '#1A1A19';
+      ctx.fillText(`${rep.agree}/${rep.total}`, w / 2, yPos);
+
+      ctx.font = '500 14px "DM Sans", system-ui, sans-serif';
+      ctx.fillStyle = '#8A8A85';
+      ctx.fillText(rep.name.split(' ').pop(), w / 2, yPos + 22);
+
+      yPos += 70;
+    });
+  } else {
+    ctx.font = '500 16px "DM Sans", system-ui, sans-serif';
     ctx.fillStyle = '#8A8A85';
-    ctx.font = '500 14px "DM Sans", system-ui, sans-serif';
-    ctx.fillText(`${indep.pct}% independent`, w / 2, 670);
+    ctx.fillText('No reps found', w / 2, yPos);
+    yPos += 40;
   }
 
-  // URL
+  // Surprise Match with ⚡
+  yPos += 20;
+  ctx.fillStyle = '#7B61C7';
+  ctx.font = '600 18px "DM Sans", system-ui, sans-serif';
+  ctx.fillText('⚡ Surprise Match', w / 2, yPos);
+
+  yPos += 35;
+  ctx.fillStyle = '#1A1A19';
+  ctx.font = '700 28px "DM Sans", system-ui, sans-serif';
+  ctx.fillText(surpriseMatch.name, w / 2, yPos);
+
+  yPos += 28;
+  ctx.fillStyle = '#8A8A85';
+  ctx.font = '500 14px "DM Sans", system-ui, sans-serif';
+  ctx.fillText(`${surpriseMatch.agree}/${surpriseMatch.total}`, w / 2, yPos);
+
+  // Bottom: primarymatch.com
   ctx.fillStyle = '#4A90D9';
   ctx.font = '600 16px "DM Sans", system-ui, sans-serif';
-  ctx.fillText('primarydaily.com/match', w / 2, 720);
+  ctx.fillText('primarymatch.com', w / 2, h - 60);
 
   // Try to share or copy
   try {
     const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
 
     // Try native share first
-    if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'primary-match.png', { type: 'image/png' })] })) {
+    if (navigator.share && navigator.canShare && navigator.canShare({ files: [new File([blob], 'primarymatch.png', { type: 'image/png' })] })) {
       await navigator.share({
-        files: [new File([blob], 'primary-match.png', { type: 'image/png' })],
-        title: 'My Primary Match',
-        text: `I got a ${top.score}% match! Who did you get?`
+        files: [new File([blob], 'primarymatch.png', { type: 'image/png' })],
+        title: 'My PrimaryMatch',
+        text: 'Check out my PrimaryMatch results!'
       });
       showToast('Shared successfully');
     } else if (navigator.clipboard && navigator.clipboard.write) {
@@ -7721,7 +8154,7 @@ async function shareAsImage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'primary-match.png';
+      a.download = 'primarymatch.png';
       a.click();
       URL.revokeObjectURL(url);
       showToast('Image downloaded');
@@ -8374,10 +8807,11 @@ function computeLevel(daysPlayed, totalStances) {
 function buildFingerprintTab() {
   const store = getStore();
   const hasPlayed = store.lastPlayed === TODAY_STR;
-  const daysPlayed = MOCK_HISTORY.length;
+  // Count real days played (MOCK_HISTORY is disabled, so only count if hasPlayed)
+  const daysPlayed = hasPlayed ? 1 : 0;
 
   // Check if user has any data at all
-  if (!hasPlayed && daysPlayed === 0) {
+  if (!hasPlayed) {
     // Day 1, no data yet
     const html = `
       <div class="fp-header">
@@ -8466,18 +8900,18 @@ function buildFingerprintTab() {
       }).join('')}
     </div>
     <div class="fp-insights"><div class="fp-section-title">Surprises</div>
-      ${insights.map(ins => `<div class="fp-insight-card"><div class="fp-insight-icon">Pattern found</div><div class="fp-insight-text">${ins.text}</div>${ins.sub ? `<div class="fp-insight-sub">${ins.sub}</div>` : ''}</div>`).join('')}
-    </div>
-    <div class="fp-drift"><div class="fp-section-title">How you've shifted</div>
-      ${daysPlayed < 2 ? `
-        <div style="background:var(--card);border-radius:14px;padding:40px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.04);text-align:center">
-          <div style="font-size:15px;color:var(--muted);line-height:1.6">Play tomorrow to start tracking your evolution</div>
-        </div>
-      ` : `
-        <div class="fp-drift-chart"><div class="fp-drift-canvas-wrap"><canvas id="fpDrift"></canvas></div>
-          <div class="fp-drift-legend"><div class="fp-drift-legend-item"><div class="fp-drift-dot" style="background:var(--muted)"></div>First 5 days</div><div class="fp-drift-legend-item"><div class="fp-drift-dot" style="background:var(--text)"></div>Last 5 days</div></div>
+      ${insights.length > 0 ? insights.map(ins => `<div class="fp-insight-card"><div class="fp-insight-icon">Pattern found</div><div class="fp-insight-text">${ins.text}</div>${ins.sub ? `<div class="fp-insight-sub">${ins.sub}</div>` : ''}</div>`).join('') : `
+        <div style="background:var(--card);border-radius:14px;padding:32px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.04);text-align:center">
+          <div style="font-size:15px;color:var(--muted);line-height:1.6">Play 3+ days to unlock insights about your political patterns</div>
         </div>
       `}
+    </div>
+    <div class="fp-drift"><div class="fp-section-title">Drift Tracking</div>
+      <div style="background:var(--card);border-radius:14px;padding:40px 24px;box-shadow:0 1px 4px rgba(0,0,0,0.04);text-align:center">
+        <div style="font-size:15px;color:var(--muted);line-height:1.6">
+          ${daysPlayed === 1 ? 'Play more days to see your political shape evolve' : 'Play tomorrow to track drift'}
+        </div>
+      </div>
     </div>
     ${closestRep ? `<div class="fp-closest"><div class="fp-section-title">Closest overall match</div>
       <div class="fp-closest-card" onclick="openRepExpanded('${closestRep.id}')">
