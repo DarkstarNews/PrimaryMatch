@@ -8018,10 +8018,10 @@ function buildShareGrid(matches) {
   const top = matches[0];
   const blocks = answers.map((ans, i) => {
     const userAnswer = getAnswer(i);
-    if (userAnswer === null || userAnswer === undefined) return `<div class="share-block skip-block" title="skipped">⬜</div>`;
+    if (userAnswer === null || userAnswer === undefined) return `<div class="share-block skip-block" title="skipped"></div>`;
     const topRepVote = top.votes[TODAY_ISSUES[i].id];
     const agreed = userAnswer === topRepVote;
-    return `<div class="share-block ${agreed ? 'agree-block' : 'disagree-block'}" title="${TODAY_ISSUES[i].category}">${agreed ? '🟦' : '🟥'}</div>`;
+    return `<div class="share-block ${agreed ? 'agree-match' : 'disagree-match'}" title="${TODAY_ISSUES[i].category}"></div>`;
   }).join('');
 
   const catSummary = CATEGORIES.filter(c => {
@@ -8063,7 +8063,7 @@ function copyShare() {
     const userAnswer = getAnswer(i);
     if (userAnswer === null || userAnswer === undefined) return '⬜';
     const topRepVote = top.votes[TODAY_ISSUES[i].id];
-    return userAnswer === topRepVote ? '🟦' : '🟥';
+    return userAnswer === topRepVote ? '⬛' : '⬜';
   }).join('');
 
   const repScores = `${top.score}% match`;
@@ -8493,8 +8493,8 @@ function renderRepsIncremental() {
   const batch = repsListCache.slice(repsRenderIndex, repsRenderIndex + REPS_BATCH_SIZE);
   batch.forEach(html => {
     const div = document.createElement('div');
-    div.innerHTML = html;
-    container.appendChild(div.firstChild);
+    div.innerHTML = html.trim();
+    container.appendChild(div.firstElementChild || div.firstChild);
   });
 
   repsRenderIndex += REPS_BATCH_SIZE;
