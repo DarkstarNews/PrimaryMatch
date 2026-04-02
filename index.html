@@ -7427,9 +7427,19 @@ function switchTab(tab) {
       init();
     }
   } else if (tab === 'reps') {
+    const store = getStore();
+    if (store.lastPlayed === TODAY_STR && store.answers) {
+      answers = store.answers;
+      updateHistFromToday();
+    }
     buildRepsTab();
     showScreen('reps-tab');
   } else if (tab === 'fingerprint') {
+    const store = getStore();
+    if (store.lastPlayed === TODAY_STR && store.answers) {
+      answers = store.answers;
+      updateHistFromToday();
+    }
     showScreen('fingerprint-tab');
     setTimeout(() => buildFingerprintTab(), 50);
   }
